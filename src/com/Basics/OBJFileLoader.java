@@ -34,6 +34,8 @@ public class OBJFileLoader {
             file = readFile("\\Resources\\Objects\\grass_block.mtl");
         }
         List<String> processedFile = preProcessFile(file);
+        meshes.add(loadMeshWithoutTexture(processedFile));
+        /*
         List<String> meshFile = null;
         for(String line : processedFile){
             if(line.isEmpty()) continue;
@@ -45,6 +47,8 @@ public class OBJFileLoader {
                 meshFile.add(line);
             }
         }
+
+         */
         return meshes;
     }
 

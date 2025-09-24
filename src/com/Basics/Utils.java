@@ -12,7 +12,6 @@ import java.util.List;
 public class Utils {
     static final boolean isDebug = false;
     public static GameEngine gameEngine;
-    static BufferedImage image = null;
 
     public static String loadShaderFile(String name){
         debugPrint("loading File...");
@@ -68,7 +67,4 @@ public class Utils {
         return flattenToArray(vec2s.toArray(new Vector2f[0]));
     }
 
-    public void nothing(){
-
-    }
 }
