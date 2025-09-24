@@ -1,0 +1,53 @@
+{
+"Helios": {
+  "type": "Button",
+  "position": {
+    "x": 347.0,
+    "y": 111.0
+  },
+  "size": {
+    "width": 500.0,
+    "height": 150.0
+  },
+  "texture": "GUI\\Button\\Grey_Button.9.png",
+  "isVisible": true,
+  "zIndex": 0,
+  "events": {
+    "click": "dragging"
+  }
+},
+"Banana2": {
+  "type": "Button",
+  "position": {
+    "x": 858.0,
+    "y": 185.0
+  },
+  "size": {
+    "width": 200.0,
+    "height": 300.0
+  },
+  "texture": "GUI\\Button\\Grey_Button.9.png",
+  "isVisible": true,
+  "zIndex": 0,
+  "events": {
+    "click": "dragging"
+  }
+},
+"Banana": {
+  "type": "Button",
+  "position": {
+    "x": 704.0,
+    "y": 886.0
+  },
+  "size": {
+    "width": 500.0,
+    "height": 150.0
+  },
+  "texture": "GUI\\Button\\Grey_Button.9.png",
+  "isVisible": true,
+  "zIndex": 0,
+  "events": {
+    "click": "dragging"
+  }
+}
+}
