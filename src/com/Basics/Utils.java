@@ -67,4 +67,8 @@ public class Utils {
     public static float[] flattenListVec2(List<Vector2f> vec2s){
         return flattenToArray(vec2s.toArray(new Vector2f[0]));
     }
+
+    public void nothing(){
+
+    }
 }
