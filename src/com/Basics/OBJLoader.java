@@ -206,7 +206,7 @@ public class OBJLoader {
         return vec2;
     }
 
-    static class Defaults {
+    static final class Defaults {
         public final Vector4f AMBIENT_COLOR = new Vector4f(0.5f);
         public final Vector4f DIFFUSE_COLOR = new Vector4f(0.5f);
         public final Vector4f SPECULAR_COLOR = new Vector4f(0.5f);
