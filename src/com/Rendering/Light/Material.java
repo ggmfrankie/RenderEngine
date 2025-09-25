@@ -9,30 +9,50 @@ public class Material {
     Vector4f ambientColor;
     Vector4f diffuseColor;
     Vector4f specularColor;
-    float reflectance;
+    Vector4f emissionColor;
+    float specularExponent;
+    float opticalDensity;
+    float dissolve;
+    int illum;
 
     Texture texture;
 
-    public Material(Vector4f ambientColor, Vector4f diffuseColor, Vector4f specularColor, float reflectance, Texture texture) {
+    public Material(Vector4f ambientColor, Vector4f diffuseColor, Vector4f specularColor, Vector4f emissiveColor, float specularExponent, float opticalDensity, float dissolve, int illum, Texture texture) {
         this.ambientColor = ambientColor;
         this.diffuseColor = diffuseColor;
         this.specularColor = specularColor;
-        this.reflectance = reflectance;
+        this.emissionColor = emissiveColor;
+
+        this.specularExponent = specularExponent;
+
+        this.opticalDensity = opticalDensity;
+        this.dissolve = dissolve;
+
+        this.illum = illum;
+
         this.texture = texture;
     }
     public Material(Texture texture){
-        this.ambientColor = new Vector4f(0.5f);
-        this.diffuseColor = new Vector4f(0.5f);
-        this.specularColor = new Vector4f(0.5f);
-        this.reflectance = 0.3f;
+        setDefaultValues();
         this.texture = texture;
     }
 
     public Material(){
+        setDefaultValues();
+    }
+
+    private void setDefaultValues(){
         this.ambientColor = new Vector4f(0.5f);
         this.diffuseColor = new Vector4f(0.5f);
         this.specularColor = new Vector4f(0.5f);
-        this.reflectance = 0.3f;
+        this.emissionColor = new Vector4f(0.5f);
+
+        this.specularExponent = 0.3f;
+
+        this.opticalDensity = 1.0f;
+        this.dissolve = 1.0f;
+
+        this.illum = 2;
     }
 
     public Vector4f getAmbientColor() {
@@ -48,8 +68,8 @@ public class Material {
     }
 
 
-    public float getReflectance() {
-        return reflectance;
+    public float getSpecularExponent() {
+        return specularExponent;
     }
 
     public void setTexture(Texture texture){

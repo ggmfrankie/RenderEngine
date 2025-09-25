@@ -10,7 +10,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
@@ -207,7 +206,7 @@ public class ShaderProgram {
         setUniform(uniformName + ".diffuse", material.getDiffuseColor());
         setUniform(uniformName + ".specular", material.getSpecularColor());
         setUniform(uniformName + ".hasTexture", material.hasTexture() ? 1 : 0);
-        setUniform(uniformName + ".reflectance", material.getReflectance());
+        setUniform(uniformName + ".reflectance", material.getSpecularExponent());
     }
 
     public void setUniform(String uniformName, DirectionalLight dirLight) {

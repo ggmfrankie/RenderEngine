@@ -1,7 +1,14 @@
 package com.Basics;
 
+import com.Rendering.GUI.Elements.TextField;
 import com.Rendering.Light.Material;
+import com.Rendering.Textures.Texture;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
+import org.joml.Vector3f;
+import org.joml.Vector3i;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,13 +23,14 @@ public class OBJLoader {
 
     private List<Material> loadMaterialsFromFile(String fileName){
         List<String> file;
+        List<Material> materials = new ArrayList<>();
         List<String> currentMaterialFile = new ArrayList<>();
         if(fileName.isEmpty()) file = readFile("\\Resources\\Objects\\grass_block.mtl");
         else file = readFile("\\Resources\\Objects\\" + fileName);
         file = preProcessFile(file);
         for(String line : file){
             if(line.startsWith("newmtl")){
-                if(!currentMaterialFile.isEmpty()) loadMaterial(currentMaterialFile);
+                if(!currentMaterialFile.isEmpty()) materials.add(loadMaterial(currentMaterialFile));
 
                 currentMaterialFile.clear();
                 currentMaterialFile.add(line.replace("newmtl", "").trim());
@@ -30,21 +38,29 @@ public class OBJLoader {
                 currentMaterialFile.add(line);
             }
         }
-
-
-
-
+        return materials;
     }
 
     private Material loadMaterial(List<String> lines){
         String name = lines.getFirst();
+        Material material;
 
-        String ambientColorLine = getLinesWith("Ka", lines).getFirst();
-        String diffuseColorLine = getLinesWith("Kd", lines).getFirst();
-        String specularColorLine = getLinesWith("Ks", lines).getFirst();
-        String reflectanceLine = getLinesWith("d", lines).getFirst();
+        float specularExponent = Float.parseFloat(getLinesWith("Ns", lines).getFirst());
+        Vector3f ambientColor = convertToVec3f(getLinesWith("Ka", lines).getFirst());
+        Vector3f diffuseColor = convertToVec3f(getLinesWith("Kd", lines).getFirst());
+        Vector3f specularColor = convertToVec3f(getLinesWith("Ks", lines).getFirst());
+
+        Vector3f emissiveColor = convertToVec3f(getLinesWith("Ke", lines).getFirst());
+
+        Vector3f dissolve = convertToVec3f(getLinesWith("d", lines).getFirst());
 
         String textureName = getLinesWith("map_Kd", lines).getFirst();
+
+        material = new Material();
+    }
+
+    private Texture loadTexture(String textureName){
+        return new Texture(textureName);
     }
 
     private List<String> preProcessFile(List<String> file){
@@ -68,6 +84,57 @@ public class OBJLoader {
             }
         }
         return Lines;
+    }
+
+    private Vector3f convertToVec3f(String line){
+        String[] values = line.split(" ");
+        Vector3f vec3 = new Vector3f();
+        try{
+            vec3.x = Float.parseFloat(values[0]);
+            vec3.y = Float.parseFloat(values[1]);
+            vec3.z = Float.parseFloat(values[2]);
+        } catch (Exception e){
+            return null;
+        }
+        return vec3;
+    }
+
+    private Vector3i convertToVec3i(String line){
+        String[] values = line.split(" ");
+        Vector3i vec3 = new Vector3i();
+        try {
+            vec3.x = Integer.parseInt(values[0]);
+            vec3.y = Integer.parseInt(values[1]);
+            vec3.z = Integer.parseInt(values[2]);
+        } catch (Exception e){
+            return null;
+        }
+        return vec3;
+    }
+
+    private Vector2f convertToVec2f(String line){
+        String[] values = line.split(" ");
+        Vector2f vec2 = new Vector2f();
+        try {
+            vec2.x = Float.parseFloat(values[0]);
+            vec2.y = Float.parseFloat(values[1]);
+        } catch (Exception e){
+            return null;
+        }
+        return vec2;
+    }
+
+    private Vector2i convertToVec2i(String line){
+        String[] values = line.split(" ");
+        Vector2i vec2 = new Vector2i();
+        try {
+            vec2.x = Integer.parseInt(values[0]);
+            vec2.y = Integer.parseInt(values[1]);
+
+        } catch (Exception e){
+            return null;
+        }
+        return vec2;
     }
 
     protected static class Face {
