@@ -90,26 +90,6 @@ public class Mesh {
             vboData.bind();
         }
 
-        /*
-        vertexVboId = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vertexVboId);
-        glBufferData(GL_ARRAY_BUFFER, verticesBuffer, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-        glEnableVertexAttribArray(0);
-
-        textCoordsVboId = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, textCoordsVboId);
-        glBufferData(GL_ARRAY_BUFFER, textCoordsBuffer, GL_STATIC_DRAW);
-        glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
-        glEnableVertexAttribArray(1);
-
-        vecNormalsId = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vecNormalsId);
-        glBufferData(GL_ARRAY_BUFFER, vecNormalsBuffer, GL_STATIC_DRAW);
-        glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
-        glEnableVertexAttribArray(2);
-         */
-
         IntBuffer indicesBuffer = memAllocInt(indices.length);
 
         indicesBuffer.put(indices).flip();

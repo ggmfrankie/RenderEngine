@@ -1,5 +1,6 @@
 package com.Engine;
 import com.Basics.Interface.FloatFunction;
+import com.Basics.OBJLoader;
 import com.Basics.Saving.GUIJsonWriter;
 import com.Engine.GameObjects.GameItem;
 import com.Engine.GameObjects.ObjectLoader;
@@ -34,7 +35,7 @@ public class GameEngine implements Runnable{
     MouseInput mouseInput;
     IGameLogic gameLogic;
 
-    OBJFileLoader objFileLoader;
+    OBJLoader objFileLoader;
     ObjectLoader objectLoader;
     Map<String, Mesh> existingMeshes;
 
@@ -48,7 +49,7 @@ public class GameEngine implements Runnable{
         guiRenderer = new GUIRenderer();
         mouseInput = new MouseInput();
         meshData = new ArrayList<>();
-        objFileLoader = new OBJFileLoader();
+        objFileLoader = new OBJLoader();
 
         objectLoader = new ObjectLoader();
 

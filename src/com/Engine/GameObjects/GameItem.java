@@ -6,21 +6,22 @@ import com.Rendering.Mesh.Mesh;
 import org.joml.Vector3f;
 
 public class GameItem {
-    private final Mesh mesh;
+    private final Mesh[] meshes;
     private Vector3f position;
     private float scale;
     private Vector3f rotation;
     private UpdateAction updateAction;
 
     public GameItem(Mesh mesh){
-        this.mesh = mesh;
+        meshes = new Mesh[1];
+        this.meshes[0] = mesh;
         position = new Vector3f(0, 0, 0);
         scale = 1;
         rotation = new Vector3f(0, 0, 0);
     }
 
     public GameItem(GameItem gameItem){
-        mesh = gameItem.getMesh();
+        meshes = gameItem.getMeshes();
         position = new Vector3f(gameItem.getPosition());
         scale = gameItem.getScale();
         rotation = new Vector3f(gameItem.getRotation());
@@ -28,7 +29,9 @@ public class GameItem {
     }
 
     public void init(){
-        mesh.init();
+        for(Mesh mesh : meshes){
+            mesh.init();
+        }
     }
 
     public void setPosition(float x, float  y, float z){
@@ -60,7 +63,9 @@ public class GameItem {
     }
 
     public void render(){
-        mesh.render();
+        for(Mesh mesh : meshes){
+            mesh.render();
+        }
     }
 
     public void setScale(float scale) {
@@ -79,19 +84,25 @@ public class GameItem {
         return scale;
     }
 
-    public Mesh getMesh() {
-        return mesh;
+    public Mesh[] getMeshes() {
+        return meshes;
     }
 
     public Vector3f getColor(){
-        return mesh.getColor();
+        return meshes[0].getColor();
     }
 
     public Material getMaterial(){
-        return mesh.getMaterial();
+        return meshes[0].getMaterial();
     }
 
     public UpdateAction getUpdateAction() {
         return updateAction;
+    }
+
+    public void cleanUp() {
+        for(Mesh mesh : meshes){
+            mesh.cleanUp();
+        }
     }
 }

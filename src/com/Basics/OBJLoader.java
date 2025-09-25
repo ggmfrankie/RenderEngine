@@ -2,12 +2,14 @@ package com.Basics;
 
 import com.Rendering.GUI.Elements.TextField;
 import com.Rendering.Light.Material;
+import com.Rendering.Mesh.Mesh;
 import com.Rendering.Textures.Texture;
 import org.joml.*;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.Basics.Utils.readFile;
 
@@ -17,6 +19,10 @@ public class OBJLoader {
 
     public OBJLoader() {
         materials = new ArrayList<>();
+    }
+
+    public Mesh loadMesh(String fileName){
+        return loadMeshesFromFile(fileName).getFirst();
     }
 
     private List<Material> loadMaterialsFromFile(String fileName){
@@ -39,53 +45,93 @@ public class OBJLoader {
         return materials;
     }
 
+    private List<Mesh> loadMeshesFromFile(String fileName){
+        return null;
+    }
+
     private Material loadMaterial(List<String> lines){
         String name = lines.getFirst();
         Material material;
 
-        Vector4f ambientColor = convertToVec4f(getLinesWith("Ka", lines).getFirst());
-        Vector4f diffuseColor = convertToVec4f(getLinesWith("Kd", lines).getFirst());
-        Vector4f specularColor = convertToVec4f(getLinesWith("Ks", lines).getFirst());
+        Vector4f ambientColor = getVec4f("Ka", lines, defaults.AMBIENT_COLOR).getFirst();
+        Vector4f diffuseColor = getVec4f("Kd", lines, defaults.DIFFUSE_COLOR).getFirst();
+        Vector4f specularColor = getVec4f("Ks", lines, defaults.SPECULAR_COLOR).getFirst();
 
-        Vector4f emissiveColor = convertToVec4f(getLinesWith("Ke", lines).getFirst());
+        Vector4f emissiveColor = getVec4f("Ke", lines, defaults.EMISSION_COLOR).getFirst();
 
-        float specularExponent = parseFloat(getLinesWith("Ns", lines).getFirst());
-        float opticalDensity = parseFloat(getLinesWith("Ni", lines).getFirst());
-        float dissolve = parseFloat((getLinesWith("d", lines).getFirst()));
+        float specularExponent = getFloat("Ns", lines, defaults.SPECULAR_EXPONENT).getFirst();
+        float opticalDensity = getFloat("Ni", lines, defaults.OPTICAL_DENSITY).getFirst();
+        float dissolve = getFloat("d", lines, defaults.DISSOLVE).getFirst();
 
-        int illum = parseInt(getLinesWith("illum", lines).getFirst());
+        int illum = getInt("illum", lines, defaults.ILLUM).getFirst();
 
-        String textureName = getLinesWith("map_Kd", lines).getFirst();
+        Texture texture = getTexture("map_Kd", lines, defaults.TEXTURE);
 
         material = new Material(
                 name,
-                ambientColor == null ? defaults.AMBIENT_COLOR : ambientColor,
-                diffuseColor == null ? defaults.DIFFUSE_COLOR : diffuseColor,
-                specularColor == null ? defaults.SPECULAR_COLOR : specularColor,
-                emissiveColor == null ? defaults.EMISSION_COLOR : emissiveColor,
-                Float.isNaN(specularExponent) ? defaults.SPECULAR_EXPONENT : specularExponent,
-                Float.isNaN(opticalDensity) ? defaults.OPTICAL_DENSITY : opticalDensity,
-                Float.isNaN(dissolve) ? defaults.DISSOLVE : dissolve,
-                illum == Integer.MAX_VALUE ? defaults.ILLUM : illum,
-                new Texture(textureName)
+                ambientColor,
+                diffuseColor,
+                specularColor,
+                emissiveColor,
+                specularExponent,
+                opticalDensity,
+                dissolve,
+                illum,
+                texture
         );
         return material;
     }
 
-    private float parseFloat(String s){
-        try {
-            return Float.parseFloat(s);
-        } catch (Exception e){
-            return Float.NaN;
+    private List<Vector4f> getVec4f(String prefix, List<String> lines, Vector4f defaultValue){
+        List<String> matchedLines = getLinesWith(prefix, lines);
+
+        if (matchedLines.isEmpty()) {
+            return List.of(defaultValue);
         }
+
+        return matchedLines.stream()
+                .map(this::convertToVec4f)
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    private List<Float> getFloat(String prefix, List<String> lines, float defaultValue){
+        List<String> matchedLines = getLinesWith(prefix, lines);
+
+        if (matchedLines.isEmpty()) {
+            return List.of(defaultValue);
+        }
+
+        return matchedLines.stream()
+                .map(this::parseFloat)
+                .toList();
+    }
+
+    private List<Integer> getInt(String prefix, List<String> lines, int defaultValue){
+        List<String> matchedLines = getLinesWith(prefix, lines);
+
+        if (matchedLines.isEmpty()) {
+            return List.of(defaultValue);
+        }
+
+        return matchedLines.stream()
+                .map(this::parseInt)
+                .toList();
+    }
+
+    private Texture getTexture(String prefix, List<String> lines, Texture defaultValue){
+        return getLinesWith(prefix, lines).stream()
+                .findFirst()
+                .map(this::loadTexture)
+                .orElse(defaultValue);
+    }
+
+    private float parseFloat(String s){
+        return Float.parseFloat(s);
     }
 
     private int parseInt(String s){
-        try {
-            return Integer.parseInt(s);
-        } catch (Exception e){
-            return Integer.MAX_VALUE;
-        }
+        return Integer.parseInt(s);
     }
 
     private Texture loadTexture(String textureName){

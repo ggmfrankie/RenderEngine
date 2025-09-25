@@ -85,18 +85,17 @@ public class Renderer {
         shaderProgram.createSpotLightUniform("spotLight");
 
         setUniforms();
-
     }
 
     public void setUniforms(){
         shaderProgram.setUniform("texture_sampler", 0);
     }
 
-
-
     public void addGameItem(GameItem gameItem){
         debugPrint("Adding Mesh");
-        gameItem.getMesh().setShader(shaderProgram);
+        for(Mesh mesh : gameItem.getMeshes()){
+            mesh.setShader(shaderProgram);
+        }
         gameItems.add(gameItem);
     }
 
@@ -133,9 +132,10 @@ public class Renderer {
         for (GameItem gameItem : gameItems) {
 
             Matrix4f modelViewMatrix = transformation.getModelViewMatrix(gameItem, viewMatrix);
-
+            for (Mesh mesh : gameItem.getMeshes()){
+                shaderProgram.setUniform("material", mesh.getMaterial());
+            }
             shaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
-            shaderProgram.setUniform("material", gameItem.getMaterial());
             gameItem.render();
         }
         shaderProgram.unbind();
@@ -144,7 +144,7 @@ public class Renderer {
 
     public void cleanUp(){
         for (GameItem gameItem : gameItems){
-            gameItem.getMesh().cleanUp();
+            gameItem.cleanUp();
         }
     }
 
