@@ -104,7 +104,7 @@ public class OBJLoader {
         }
 
         return matchedLines.stream()
-                .map(this::parseFloat)
+                .map(Float::parseFloat)
                 .toList();
     }
 
@@ -116,7 +116,7 @@ public class OBJLoader {
         }
 
         return matchedLines.stream()
-                .map(this::parseInt)
+                .map(Integer::parseInt)
                 .toList();
     }
 
@@ -125,14 +125,6 @@ public class OBJLoader {
                 .findFirst()
                 .map(this::loadTexture)
                 .orElse(defaultValue);
-    }
-
-    private float parseFloat(String s){
-        return Float.parseFloat(s);
-    }
-
-    private int parseInt(String s){
-        return Integer.parseInt(s);
     }
 
     private Texture loadTexture(String textureName){
