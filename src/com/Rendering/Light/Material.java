@@ -15,9 +15,21 @@ public class Material {
     float dissolve;
     int illum;
 
+    String name;
+
     Texture texture;
 
-    public Material(Vector4f ambientColor, Vector4f diffuseColor, Vector4f specularColor, Vector4f emissiveColor, float specularExponent, float opticalDensity, float dissolve, int illum, Texture texture) {
+    public Material(String name,
+                    Vector4f ambientColor,
+                    Vector4f diffuseColor,
+                    Vector4f specularColor,
+                    Vector4f emissiveColor,
+                    float specularExponent,
+                    float opticalDensity,
+                    float dissolve,
+                    int illum,
+                    Texture texture) {
+
         this.ambientColor = ambientColor;
         this.diffuseColor = diffuseColor;
         this.specularColor = specularColor;
@@ -30,14 +42,17 @@ public class Material {
 
         this.illum = illum;
 
+        this.name = name;
         this.texture = texture;
     }
-    public Material(Texture texture){
+    public Material(String name, Texture texture){
         setDefaultValues();
+        this.name = name;
         this.texture = texture;
     }
 
-    public Material(){
+    public Material(String name){
+        this.name = name;
         setDefaultValues();
     }
 

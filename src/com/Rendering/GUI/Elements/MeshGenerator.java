@@ -125,7 +125,7 @@ public class MeshGenerator {
 
         int[] indices = {0, 1, 2, 2, 1, 3};
 
-        MeshData meshData = new MeshData(vertices, normals, indices, textures, new Material());
+        MeshData meshData = new MeshData(vertices, normals, indices, textures, new Material("component"));
         return new Mesh(meshData);
     }
 }

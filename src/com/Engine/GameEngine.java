@@ -7,7 +7,6 @@ import com.Basics.Interface.UpdateAction;
 import com.Rendering.GUI.Elements.BaseGuiComponent;
 import com.Rendering.GUI.GUIRenderer;
 import com.Rendering.Mesh.MeshData;
-import com.Basics.OBJFileLoader;
 import com.Engine.Games.IGameLogic;
 import com.Rendering.Light.DirectionalLight;
 import com.Rendering.Light.PointLight;

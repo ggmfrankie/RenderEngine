@@ -22,7 +22,7 @@ public class MeshData {
         this.indices = indices;
         this.textCoords = textCoords;
         this.normals = normals;
-        this.material = new Material();
+        this.material = new Material("Default");
     }
 
     public float[] getVertices() {

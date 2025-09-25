@@ -3,10 +3,7 @@ package com.Basics;
 import com.Rendering.GUI.Elements.TextField;
 import com.Rendering.Light.Material;
 import com.Rendering.Textures.Texture;
-import org.joml.Vector2f;
-import org.joml.Vector2i;
-import org.joml.Vector3f;
-import org.joml.Vector3i;
+import org.joml.*;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -16,6 +13,7 @@ import static com.Basics.Utils.readFile;
 
 public class OBJLoader {
     List<Material> materials;
+    Defaults defaults = new Defaults();
 
     public OBJLoader() {
         materials = new ArrayList<>();
@@ -45,18 +43,49 @@ public class OBJLoader {
         String name = lines.getFirst();
         Material material;
 
-        float specularExponent = Float.parseFloat(getLinesWith("Ns", lines).getFirst());
-        Vector3f ambientColor = convertToVec3f(getLinesWith("Ka", lines).getFirst());
-        Vector3f diffuseColor = convertToVec3f(getLinesWith("Kd", lines).getFirst());
-        Vector3f specularColor = convertToVec3f(getLinesWith("Ks", lines).getFirst());
+        Vector4f ambientColor = convertToVec4f(getLinesWith("Ka", lines).getFirst());
+        Vector4f diffuseColor = convertToVec4f(getLinesWith("Kd", lines).getFirst());
+        Vector4f specularColor = convertToVec4f(getLinesWith("Ks", lines).getFirst());
 
-        Vector3f emissiveColor = convertToVec3f(getLinesWith("Ke", lines).getFirst());
+        Vector4f emissiveColor = convertToVec4f(getLinesWith("Ke", lines).getFirst());
 
-        Vector3f dissolve = convertToVec3f(getLinesWith("d", lines).getFirst());
+        float specularExponent = parseFloat(getLinesWith("Ns", lines).getFirst());
+        float opticalDensity = parseFloat(getLinesWith("Ni", lines).getFirst());
+        float dissolve = parseFloat((getLinesWith("d", lines).getFirst()));
+
+        int illum = parseInt(getLinesWith("illum", lines).getFirst());
 
         String textureName = getLinesWith("map_Kd", lines).getFirst();
 
-        material = new Material();
+        material = new Material(
+                name,
+                ambientColor == null ? defaults.AMBIENT_COLOR : ambientColor,
+                diffuseColor == null ? defaults.DIFFUSE_COLOR : diffuseColor,
+                specularColor == null ? defaults.SPECULAR_COLOR : specularColor,
+                emissiveColor == null ? defaults.EMISSION_COLOR : emissiveColor,
+                Float.isNaN(specularExponent) ? defaults.SPECULAR_EXPONENT : specularExponent,
+                Float.isNaN(opticalDensity) ? defaults.OPTICAL_DENSITY : opticalDensity,
+                Float.isNaN(dissolve) ? defaults.DISSOLVE : dissolve,
+                illum == Integer.MAX_VALUE ? defaults.ILLUM : illum,
+                new Texture(textureName)
+        );
+        return material;
+    }
+
+    private float parseFloat(String s){
+        try {
+            return Float.parseFloat(s);
+        } catch (Exception e){
+            return Float.NaN;
+        }
+    }
+
+    private int parseInt(String s){
+        try {
+            return Integer.parseInt(s);
+        } catch (Exception e){
+            return Integer.MAX_VALUE;
+        }
     }
 
     private Texture loadTexture(String textureName){
@@ -86,17 +115,18 @@ public class OBJLoader {
         return Lines;
     }
 
-    private Vector3f convertToVec3f(String line){
+    private Vector4f convertToVec4f(String line){
         String[] values = line.split(" ");
-        Vector3f vec3 = new Vector3f();
+        Vector4f vec4 = new Vector4f();
         try{
-            vec3.x = Float.parseFloat(values[0]);
-            vec3.y = Float.parseFloat(values[1]);
-            vec3.z = Float.parseFloat(values[2]);
+            vec4.x = Float.parseFloat(values[0]);
+            vec4.y = Float.parseFloat(values[1]);
+            vec4.z = Float.parseFloat(values[2]);
+            vec4.w = 1.0f;
         } catch (Exception e){
             return null;
         }
-        return vec3;
+        return vec4;
     }
 
     private Vector3i convertToVec3i(String line){
@@ -137,8 +167,22 @@ public class OBJLoader {
         return vec2;
     }
 
+    static class Defaults {
+        public final Vector4f AMBIENT_COLOR = new Vector4f(0.5f);
+        public final Vector4f DIFFUSE_COLOR = new Vector4f(0.5f);
+        public final Vector4f SPECULAR_COLOR = new Vector4f(0.5f);
+        public final Vector4f EMISSION_COLOR = new Vector4f(0.5f);
+
+        public final float SPECULAR_EXPONENT = 2.2f;
+        public final float OPTICAL_DENSITY = 1.0f;
+        public final float DISSOLVE = 1.0f;
+
+        public final int ILLUM = 2;
+        public final Texture TEXTURE = new Texture();
+    }
+
     protected static class Face {
-        private final List<OBJFileLoader.IdxGroup> idxGroups;
+        private final List<OBJLoader.IdxGroup> idxGroups;
 
         public Face(String substring) {
             substring = substring.replace("f ", "");
@@ -150,34 +194,34 @@ public class OBJLoader {
             }
         }
 
-        public List<OBJFileLoader.Face> triangulate() {
-            List<OBJFileLoader.Face> result = new ArrayList<>();
+        public List<OBJLoader.Face> triangulate() {
+            List<OBJLoader.Face> result = new ArrayList<>();
 
             if (idxGroups.size() < 3) return result; // invalid face
 
             for (int i = 1; i < idxGroups.size() - 1; i++) {
-                OBJFileLoader.Face triangle = new OBJFileLoader.Face(idxGroups.getFirst(), idxGroups.get(i), idxGroups.get(i + 1));
+                OBJLoader.Face triangle = new OBJLoader.Face(idxGroups.getFirst(), idxGroups.get(i), idxGroups.get(i + 1));
                 result.add(triangle);
             }
 
             return result;
         }
 
-        private Face(OBJFileLoader.IdxGroup v0, OBJFileLoader.IdxGroup v1, OBJFileLoader.IdxGroup v2) {
+        private Face(OBJLoader.IdxGroup v0, OBJLoader.IdxGroup v1, OBJLoader.IdxGroup v2) {
             this.idxGroups = List.of(v0, v1, v2);
         }
 
-        private OBJFileLoader.IdxGroup parseVertexData(String token) {
+        private OBJLoader.IdxGroup parseVertexData(String token) {
             String[] parts = token.split("/");
 
-            OBJFileLoader.IdxGroup group = new OBJFileLoader.IdxGroup();
+            OBJLoader.IdxGroup group = new OBJLoader.IdxGroup();
             group.idxPos = parts.length > 0 && !parts[0].isEmpty() ? Integer.parseInt(parts[0]) : -1;
             group.idxTextCoord = parts.length > 1 && !parts[1].isEmpty() ? Integer.parseInt(parts[1]) : -1;
             group.idxVecNormal = parts.length > 2 && !parts[2].isEmpty() ? Integer.parseInt(parts[2]) : -1;
             return group;
         }
 
-        public List<OBJFileLoader.IdxGroup> getFaceVertexIndices() {
+        public List<OBJLoader.IdxGroup> getFaceVertexIndices() {
             return idxGroups;
         }
     }
