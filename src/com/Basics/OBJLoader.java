@@ -7,35 +7,36 @@ import com.Rendering.Textures.Texture;
 import org.joml.*;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static com.Basics.Utils.readFile;
 
 public class OBJLoader {
-    List<Material> materials;
+    Map<String, Material> materials;
     Defaults defaults = new Defaults();
 
     public OBJLoader() {
-        materials = new ArrayList<>();
+
     }
 
     public Mesh loadMesh(String fileName){
         return loadMeshesFromFile(fileName).getFirst();
     }
 
-    private List<Material> loadMaterialsFromFile(String fileName){
+    private Map<String, Material> loadMaterialsFromFile(String fileName){
         List<String> file;
-        List<Material> materials = new ArrayList<>();
+        Map<String, Material> materials = new HashMap<>();
         List<String> currentMaterialFile = new ArrayList<>();
         if(fileName.isEmpty()) file = readFile("\\Resources\\Objects\\grass_block.mtl");
         else file = readFile("\\Resources\\Objects\\" + fileName);
         file = preProcessFile(file);
+
         for(String line : file){
             if(line.startsWith("newmtl")){
-                if(!currentMaterialFile.isEmpty()) materials.add(loadMaterial(currentMaterialFile));
-
+                if(!currentMaterialFile.isEmpty()){
+                    Material mat = loadMaterial(currentMaterialFile);
+                    materials.put(mat.getName(), mat);
+                }
                 currentMaterialFile.clear();
                 currentMaterialFile.add(line.replace("newmtl", "").trim());
             } else {

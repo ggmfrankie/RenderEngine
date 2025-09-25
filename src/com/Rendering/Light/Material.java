@@ -99,6 +99,10 @@ public class Material {
         return texture != null;
     }
 
+    public String getName(){
+        return name;
+    }
+
 
     public void initTexture(){
         if(texture == null) return;
