@@ -286,7 +286,7 @@ public class OBJFileLoader {
             return result;
         }
 
-        private Face(IdxGroup v0, IdxGroup v1, IdxGroup v2) {
+        Face(IdxGroup v0, IdxGroup v1, IdxGroup v2) {
             this.idxGroups = List.of(v0, v1, v2);
         }
 
