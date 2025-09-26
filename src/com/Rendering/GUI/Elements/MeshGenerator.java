@@ -97,10 +97,9 @@ public class MeshGenerator {
         int[] indices = indicesQuads.stream().mapToInt(Integer::intValue).toArray();
         float[] texCoords = flattenListVec2(texCoordQuad);
 
-        MeshData meshData = new MeshData(vertices, normals, indices, texCoords);
-        Mesh mesh = new Mesh(meshData);
+        MeshData meshData = new MeshData(vertices, normals, texCoords, indices);
 
-        return mesh;
+        return new Mesh(meshData, "NinePatch");
     }
 
     public Mesh generateBasicQuad(){
@@ -125,7 +124,7 @@ public class MeshGenerator {
 
         int[] indices = {0, 1, 2, 2, 1, 3};
 
-        MeshData meshData = new MeshData(vertices, normals, indices, textures, new Material("component"));
-        return new Mesh(meshData);
+        MeshData meshData = new MeshData(vertices, normals, textures, indices, new Material("component"));
+        return new Mesh(meshData, "Basic Quad");
     }
 }

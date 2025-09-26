@@ -2,12 +2,13 @@ package com.Engine.GameObjects;
 
 import com.Rendering.Light.Material;
 import com.Rendering.Mesh.Mesh;
+import com.Rendering.Mesh.MeshData;
 import com.Rendering.Textures.Texture;
 import org.joml.*;
 
 import java.util.*;
 
-import static com.Basics.Utils.readFile;
+import static com.Basics.Utils.*;
 
 public class OBJLoader {
     Map<String, Material> materials;
@@ -17,7 +18,7 @@ public class OBJLoader {
 
     }
 
-    public HashSet<Mesh> loadFullMesh(String fileName){
+    public HashSet<Mesh> loadAllMeshes(String fileName){
         List<String> meshFile;
 
         if(fileName.isEmpty()) meshFile = readFile("\\Resources\\Objects\\grass_block.mtl");
@@ -65,45 +66,97 @@ public class OBJLoader {
             else baseFaceData.add("");
         }
 
+        boolean foundGroup = false;
+        String currentMaterial = "";
 
         for(String line : file){
+            if(line.startsWith("usemtl")) currentMaterial = line.replace("usemtl", "").trim();
             if(line.startsWith("g ")){
                 if(!currentMeshFile.isEmpty()){
                     currentMeshFile.addAll(baseFaceData);
-                    meshes.add(loadMesh(baseFaceData));
+                    meshes.add(loadMesh(baseFaceData, materials.get(currentMaterial)));
                 }
                 currentMeshFile.clear();
+                currentMeshFile.add(line);
+                foundGroup = true;
                 continue;
             }
+            if(!foundGroup) continue;
             if(line.startsWith("f ")) currentMeshFile.add(line);
         }
         return meshes;
     }
-/*
-    private <T> Map<String, T> load(String key, String path){
-        List<String> file;
-        Map<String, T> values = new HashMap<>();
-        List<String> currentFile = new ArrayList<>();
 
-        file = readFile(path);
+    private Mesh loadMesh(List<String> file, Material material){
+        String name = file.getFirst().replace("g ", "").trim();
+        List<Vector3f> vertices;
+        List<Vector2f> textures;
+        List<Vector3f> normals;
+        List<Face> faces = new ArrayList<>();
 
-        for(String line : file){
-            if(line.startsWith(key)){
-                if(!currentFile.isEmpty()){
+        List<Vector3f> finalPositions = new ArrayList<>();
+        List<Vector2f> finalTexCoords = new ArrayList<>();
+        List<Vector3f> finalNormals = new ArrayList<>();
+        List<Integer> indicesList= new ArrayList<>();
 
+        Map<IdxGroup, Integer> uniqueVertexMap = new HashMap<>();
+
+        List<String> faceSubstrings = getLinesWith("f", file);
+
+        List<String> vertexSubstrings = getLinesWith("v", file);
+        List<String> textureSubstrings = getLinesWith("vt", file);
+        List<String> normalSubstrings = getLinesWith("vn", file);
+
+        vertices = parseV3(vertexSubstrings);
+        textures = parseV2(textureSubstrings);
+        normals = parseV3(normalSubstrings);
+
+        for(String faceString : faceSubstrings){
+            faces.add(new Face(faceString));
+        }
+        for (Face face : faces) {
+            List<Face> triangles = face.triangulate();
+
+            for (Face triangle : triangles) {
+                for (IdxGroup idx : triangle.getFaceVertexIndices()) {
+                    if (!uniqueVertexMap.containsKey(idx)) {
+                        uniqueVertexMap.put(idx, finalPositions.size());
+                        finalPositions.add(vertices.get(idx.idxPos - 1));
+                        if(idx.idxTextCoord-1 > -1){
+                            finalTexCoords.add(textures.get(idx.idxTextCoord - 1));
+                        }
+                        finalNormals.add(normals.get(idx.idxVecNormal - 1));
+                    }
+                    indicesList.add(uniqueVertexMap.get(idx));
                 }
-                currentFile.clear();
-                currentFile.add(line.replace(key, "").trim());
-            } else {
-                currentFile.add(line);
             }
         }
+
+        MeshData meshData = new MeshData(
+                flattenListVec3(finalPositions),
+                flattenListVec2(finalTexCoords),
+                flattenListVec3(finalNormals),
+                indicesList.stream().mapToInt(Integer::intValue).toArray(),
+                material
+        );
+
+        return new Mesh(meshData, name);
     }
 
- */
+    private List<Vector3f> parseV3(List<String> lines){
+        List<Vector3f> vec3s = new ArrayList<>();
+        for(String line : lines){
+            vec3s.add(convertToVec3f(line));
+        }
+        return vec3s;
+    }
 
-    private Mesh loadMesh(List<String> file){
-        List<>
+    private List<Vector2f> parseV2(List<String> lines){
+        List<Vector2f> vec2s = new ArrayList<>();
+        for(String line : lines){
+            vec2s.add(convertToVec2f(line));
+        }
+        return vec2s;
     }
 
     private Material loadMaterial(List<String> lines){
@@ -189,9 +242,11 @@ public class OBJLoader {
 
     private List<String> preProcessFile(List<String> file){
         List<String> processedFile = new ArrayList<>();
-        for (int i = 0; i < file.size(); i++) {
-            String line = file.get(i).replaceAll("\\s+", " ");
-            line = line.replaceAll("#.*$", "").trim();
+        for (String s : file) {
+            String line = s
+                    .replaceAll("\\s+", " ")
+                    .replaceAll("#.*$", "")
+                    .trim();
 
             processedFile.add(line);
         }
@@ -203,8 +258,7 @@ public class OBJLoader {
 
         for(String lineString : file){
             if(lineString.startsWith(key+ " ")){
-                lineString = lineString.replace(key+ " ", "");
-                Lines.add(lineString);
+                Lines.add(lineString.replace(key+ " ", ""));
             }
         }
         return Lines;
@@ -217,11 +271,29 @@ public class OBJLoader {
             vec4.x = Float.parseFloat(values[0]);
             vec4.y = Float.parseFloat(values[1]);
             vec4.z = Float.parseFloat(values[2]);
-            vec4.w = 1.0f;
+            if(values.length == 4) vec4.w = Float.parseFloat(values[3]);
+            else vec4.w = 1.0f;
+
         } catch (Exception e){
+            System.out.println("Error converting Vec4 to float: " +line);
             return null;
         }
         return vec4;
+    }
+
+    private Vector3f convertToVec3f(String line){
+        String[] values = line.split(" ");
+        Vector3f vec3 = new Vector3f();
+        try{
+            vec3.x = Float.parseFloat(values[0]);
+            vec3.y = Float.parseFloat(values[1]);
+            vec3.z = Float.parseFloat(values[2]);
+
+        } catch (Exception e){
+            System.out.println("Error converting Vec3 to float: " +line);
+            return null;
+        }
+        return vec3;
     }
 
     private Vector3i convertToVec3i(String line){

@@ -9,7 +9,7 @@ public class MeshData {
     float[] normals;
     Material material;
 
-    public MeshData(float[] vertices,float[] normals, int[] indices, float[] textCoords, Material material) {
+    public MeshData(float[] vertices,float[] normals, float[] textCoords, int[] indices, Material material) {
         this.vertices = vertices;
         this.indices = indices;
         this.textCoords = textCoords;
@@ -17,7 +17,7 @@ public class MeshData {
         this.material = material;
     }
 
-    public MeshData(float[] vertices,float[] normals, int[] indices, float[] textCoords) {
+    public MeshData(float[] vertices,float[] normals, float[] textCoords, int[] indices) {
         this.vertices = vertices;
         this.indices = indices;
         this.textCoords = textCoords;
