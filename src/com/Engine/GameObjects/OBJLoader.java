@@ -28,42 +28,23 @@ public class OBJLoader {
         return loadMeshesFromFile(meshFile);
     }
 
-    private Map<String, Material> loadMaterialsFromFile(List<String> file){
-        file = preProcessFile(file);
-        Map<String, Material> materials = new HashMap<>();
-        List<String> currentMaterialFile = new ArrayList<>();
-
-        for(String line : file){
-            if(line.startsWith("newmtl")){
-                if(!currentMaterialFile.isEmpty()){
-                    Material mat = loadMaterial(currentMaterialFile);
-                    materials.put(mat.getName(), mat);
-                }
-                currentMaterialFile.clear();
-                currentMaterialFile.add(line.replace("newmtl", "").trim());
-            } else {
-                currentMaterialFile.add(line);
-            }
-        }
-        return materials;
-    }
-
     private HashSet<Mesh> loadMeshesFromFile(List<String> file){
         file = preProcessFile(file);
+
         List<String> materialFile = readFile(
                 "\\Resources\\Objects\\"
-                        +file.getFirst()
+                        +getLinesWith("mtllib", file)
+                        .getFirst()
                         .replace("mtllib", "")
                         .trim());
 
         Map<String, Material> materials = loadMaterialsFromFile(materialFile);
         HashSet<Mesh> meshes = new HashSet<>();
         final List<String> baseFaceData = new ArrayList<>();
-        List<String> currentMeshFile = new ArrayList<>();
+        List<String> currentFaces = new ArrayList<>();
 
         for(String line : file){
             if(!line.startsWith("f ")) baseFaceData.add(line);
-            else baseFaceData.add("");
         }
 
         boolean foundGroup = false;
@@ -72,17 +53,21 @@ public class OBJLoader {
         for(String line : file){
             if(line.startsWith("usemtl")) currentMaterial = line.replace("usemtl", "").trim();
             if(line.startsWith("g ")){
-                if(!currentMeshFile.isEmpty()){
-                    currentMeshFile.addAll(baseFaceData);
-                    meshes.add(loadMesh(baseFaceData, materials.get(currentMaterial)));
+                if(!currentFaces.isEmpty()){
+                    List<String> combined = new ArrayList<>(baseFaceData);
+                    combined.addAll(currentFaces);
+
+                    System.out.println("Searching for material named: " +currentMaterial);
+                    meshes.add(loadMesh(combined, materials.get(currentMaterial)));
+                    System.out.println(materials.containsKey(currentMaterial));
                 }
-                currentMeshFile.clear();
-                currentMeshFile.add(line);
+                currentFaces.clear();
+                currentFaces.add(line);
                 foundGroup = true;
                 continue;
             }
             if(!foundGroup) continue;
-            if(line.startsWith("f ")) currentMeshFile.add(line);
+            if(line.startsWith("f ")) currentFaces.add(line);
         }
         return meshes;
     }
@@ -143,6 +128,35 @@ public class OBJLoader {
         return new Mesh(meshData, name);
     }
 
+    private Map<String, Material> loadMaterialsFromFile(List<String> file){
+        file = preProcessFile(file);
+        Map<String, Material> materials = new HashMap<>();
+        List<String> currentMaterialFile = new ArrayList<>();
+        System.out.println("---------------------");
+        System.out.println();
+        System.out.println(getLinesWith("newmtl", file));
+        System.out.println();
+        System.out.println("---------------------");
+
+        for(String line : file){
+            if(line.startsWith("newmtl")){
+                if(!currentMaterialFile.isEmpty()){
+                    Material mat = loadMaterial(currentMaterialFile);
+                    materials.put(mat.getName(), mat);
+                }
+                currentMaterialFile.clear();
+                currentMaterialFile.add(line.replace("newmtl", "").trim());
+            } else {
+                currentMaterialFile.add(line);
+            }
+        }
+        if (!currentMaterialFile.isEmpty()) {
+            Material mat = loadMaterial(currentMaterialFile);
+            materials.put(mat.getName(), mat);
+        }
+        return materials;
+    }
+
     private List<Vector3f> parseV3(List<String> lines){
         List<Vector3f> vec3s = new ArrayList<>();
         for(String line : lines){
@@ -161,6 +175,10 @@ public class OBJLoader {
 
     private Material loadMaterial(List<String> lines){
         String name = lines.getFirst().trim();
+        System.out.println("---------------------------");
+        System.out.println("New material: " +name);
+        System.out.println("With file:");
+        System.out.println(lines);
         Material material;
 
         Vector4f ambientColor = getVec4f("Ka", lines, defaults.AMBIENT_COLOR).getFirst();
@@ -258,6 +276,10 @@ public class OBJLoader {
 
         for(String lineString : file){
             if(lineString.startsWith(key+ " ")){
+                if(Objects.equals(key, "newmtl")){
+                    System.out.println("Matching: " +lineString+ " with: " +key);
+                }
+
                 Lines.add(lineString.replace(key+ " ", ""));
             }
         }
@@ -403,6 +425,20 @@ public class OBJLoader {
             idxPos = NO_VALUE;
             idxTextCoord = NO_VALUE;
             idxVecNormal = NO_VALUE;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof IdxGroup other)) return false;
+            return idxPos == other.idxPos &&
+                    idxTextCoord == other.idxTextCoord &&
+                    idxVecNormal == other.idxVecNormal;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(idxPos, idxTextCoord, idxVecNormal);
         }
     }
 }

@@ -173,81 +173,41 @@ public class GameEngine implements Runnable{
     public void addPointLight(PointLight pointLight){
         renderer.addPointLight(pointLight);
     }
+
     public void addDirectionalLight(DirectionalLight directionalLight){
         renderer.addDirectionalLight(directionalLight);
     }
 
-    @Deprecated
-    public void addGameItem_RandomPos(String fileName){
-        Random random = new Random();
-        Mesh mesh = objFileLoader.loadMesh(fileName);
-        GameItem gameItem = new GameItem(mesh);
-        gameItem.setPosition(random.nextFloat(10.0f), random.nextFloat(10.0f), random.nextFloat(10.0f));
-        gameItem.setScale(random.nextFloat(3.0f));
-        renderer.addGameItem(gameItem);
-    }
-
-    public void addGameItem(Vector3f pos, Vector3f rotation, String fileName){
-        addGameItem(pos, rotation, fileName, 1.0f);
-    }
+    //All GameItem adding functions
 
     public void addGameItem(GameItem gameItem){
         renderer.addGameItem(gameItem);
     }
 
-    public void addGameItem(Vector3f pos, Vector3f rotation, String fileName, float scale){
-        Mesh mesh;
-        if(existingMeshes.containsKey(fileName)){
-            mesh = existingMeshes.get(fileName);
-        } else {
-            mesh = objFileLoader.loadMesh(fileName);
-        }
-        existingMeshes.put(fileName, mesh);
+    public void addGameItem(Vector3f pos, Vector3f rotation, String fileName){
+        addGameItem(pos, rotation, 1.0f,null, fileName);
+    }
 
-        GameItem gameItem = new GameItem(mesh);
-        gameItem.setPosition(pos);
-        gameItem.setRotation(rotation);
-        gameItem.setScale(scale);
-        renderer.addGameItem(gameItem);
+    public void addGameItem(Vector3f pos, Vector3f rotation, String fileName, float scale){
+        addGameItem(pos, rotation, scale, null, fileName);
     }
 
     public void addGameItem(Vector3f pos, Vector3f rotation, String fileName, UpdateAction updateAction){
-        Mesh mesh;
-        if(existingMeshes.containsKey(fileName)){
-            mesh = existingMeshes.get(fileName);
-        } else {
-            mesh = objFileLoader.loadMesh(fileName);
-        }
-        existingMeshes.put(fileName, mesh);
+        addGameItem(pos, rotation, 1.0f, updateAction, fileName);
+    }
 
-        GameItem gameItem = new GameItem(mesh);
+    public void addGameItem(Vector3f pos, Vector3f rotation, float scale, UpdateAction updateAction, String fileName){
+        HashSet<Mesh> meshes = objFileLoader.loadAllMeshes(fileName);
+        addGameItemRaw(pos, rotation, scale, updateAction, meshes);
+    }
+
+    private void addGameItemRaw(Vector3f pos, Vector3f rotation, float scale, UpdateAction updateAction, HashSet<Mesh> meshes){
+        GameItem gameItem = new GameItem(meshes.toArray(new Mesh[0]));
         gameItem.setPosition(pos);
         gameItem.setRotation(rotation);
-        gameItem.setUpdateAction(updateAction);
+        gameItem.setScale(scale);
+        if(updateAction != null) gameItem.setUpdateAction(updateAction);
         renderer.addGameItem(gameItem);
-    }
-    @Deprecated
-    public void addGameItem(String fileName, FloatFunction positionCalculator){
-        Mesh mesh = objFileLoader.loadMesh(fileName);
-        GameItem gameItem = new GameItem(mesh);
-        float x = positionCalculator.calc(0);
-        float y = positionCalculator.calc(1);
-        float z = positionCalculator.calc(2);
-
-        float pitch = positionCalculator.calc(3);
-        float yaw = positionCalculator.calc(4);
-        float roll = positionCalculator.calc(5);
-        gameItem.setPosition(x, y, z);
-        gameItem.setRotation(pitch, yaw, roll);
-        renderer.addGameItem(gameItem);
-    }
-    @Deprecated
-    public void addGameItem_RandomPos(GameItem gameItem){
-        renderer.addGameItem(gameItem);
-    }
-    @Deprecated
-    public void addGameItem_RandomPos(float x, float y, float z){
-        renderer.addGameItemAt(x, y, z);
     }
 
     public void addGUIComponent(BaseGuiComponent guiComponent){

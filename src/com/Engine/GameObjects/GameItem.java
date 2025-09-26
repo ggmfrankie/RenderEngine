@@ -12,9 +12,8 @@ public class GameItem {
     private Vector3f rotation;
     private UpdateAction updateAction;
 
-    public GameItem(Mesh mesh){
-        meshes = new Mesh[1];
-        this.meshes[0] = mesh;
+    public GameItem(Mesh[] mesh){
+        this.meshes = mesh;
         position = new Vector3f(0, 0, 0);
         scale = 1;
         rotation = new Vector3f(0, 0, 0);

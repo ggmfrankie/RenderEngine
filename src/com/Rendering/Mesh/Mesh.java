@@ -44,9 +44,21 @@ public class Mesh {
         debugPrint("Creating mesh");
         initVariables(meshData);
     }
+    public Mesh(MeshData meshData){
+        name = null;
+        debugPrint("Creating mesh");
+        initVariables(meshData);
+    }
 
     public Mesh(MeshData meshData, Texture texture, String name){
         this.name = name;
+        initVariables(meshData);
+        meshData.getMaterial().setTexture(texture);
+        vertexCount = vertices.length/3;
+    }
+
+    public Mesh(MeshData meshData, Texture texture){
+        name = null;
         initVariables(meshData);
         meshData.getMaterial().setTexture(texture);
         vertexCount = vertices.length/3;

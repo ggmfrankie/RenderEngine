@@ -99,12 +99,6 @@ public class Renderer {
         gameItems.add(gameItem);
     }
 
-    public void addGameItemAt(float x, float y, float z){
-        GameItem gameItem = new GameItem(currentMesh);
-        gameItem.setPosition(x, y, z);
-        gameItems.add(gameItem);
-    }
-
     public void initGameItems(){
         for(GameItem gameItem : gameItems){
             gameItem.init();

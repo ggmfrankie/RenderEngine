@@ -73,7 +73,7 @@ public class ObjectLoader {
          */
 
         gameEngine.addGameItem(
-                new Vector3f(-30.0f, -10.0f, 0.0f),
+                new Vector3f(0.0f, -10.0f, 0.0f),
                 new Vector3f(0.0f, 0.0f, 0.0f),
                 "Marlow66.obj"
         );
