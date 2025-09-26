@@ -46,8 +46,49 @@ public class OBJLoader {
         return materials;
     }
 
-    private List<Mesh> loadMeshesFromFile(String fileName){
-        return null;
+    private Map<String, Mesh> loadMeshesFromFile(String fileName){
+        List<String> file;
+        Map<String, Mesh> meshes = new HashMap<>();
+        List<String> currentMeshFile = new ArrayList<>();
+        if(fileName.isEmpty()) file = readFile("\\Resources\\Objects\\grass_block.mtl");
+        else file = readFile("\\Resources\\Objects\\" + fileName);
+        file = preProcessFile(file);
+
+        boolean foundGroup = false;
+        for(String line : file){
+            if(foundGroup){
+
+            } else {
+
+            }
+        }
+        return meshes;
+    }
+/*
+    private <T> Map<String, T> load(String key, String path){
+        List<String> file;
+        Map<String, T> values = new HashMap<>();
+        List<String> currentFile = new ArrayList<>();
+
+        file = readFile(path);
+
+        for(String line : file){
+            if(line.startsWith(key)){
+                if(!currentFile.isEmpty()){
+
+                }
+                currentFile.clear();
+                currentFile.add(line.replace(key, "").trim());
+            } else {
+                currentFile.add(line);
+            }
+        }
+    }
+
+ */
+
+    private Mesh loadMesh(List<String> file){
+
     }
 
     private Material loadMaterial(List<String> lines){

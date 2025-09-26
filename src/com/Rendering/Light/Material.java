@@ -45,6 +45,7 @@ public class Material {
         this.name = name;
         this.texture = texture;
     }
+
     public Material(String name, Texture texture){
         setDefaultValues();
         this.name = name;

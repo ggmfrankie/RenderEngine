@@ -31,30 +31,39 @@ public class Mesh {
     int vaoId;
     int indexVboId;
 
+    String name;
+
     Vector3f color;
     ShaderProgram shaderProgram;
     Material material;
     HashSet<VboData> vboDataSet;
 
 
-    public Mesh(MeshData meshData){
+    public Mesh(MeshData meshData, String name){
+        this.name = name;
         debugPrint("Creating mesh");
         initVariables(meshData);
     }
 
-    public Mesh(MeshData meshData, Texture texture){
+    public Mesh(MeshData meshData, Texture texture, String name){
+        this.name = name;
         initVariables(meshData);
         meshData.getMaterial().setTexture(texture);
         vertexCount = vertices.length/3;
     }
 
     public Mesh(Mesh mesh){
+        this.name = mesh.getName();
         this.color = mesh.getColor();
         this.vertices = mesh.getVertices();
         this.indices = mesh.getIndices();
         this.textCoords = mesh.getTextCoords();
         this.normals = mesh.getNormals();
         this.material = mesh.getMaterial();
+        this.vertexCount = mesh.getVertexCount();
+        this.vaoId = mesh.getVaoId();
+        this.indexVboId = mesh.getIndexVboId();
+        this.shaderProgram = mesh.getShaderProgram();
         vboDataSet = mesh.getVboDataSet();
         vertexCount = mesh.getVertexCount();
     }
@@ -184,6 +193,22 @@ public class Mesh {
 
     public int getVertexCount() {
         return vertexCount;
+    }
+
+    public ShaderProgram getShaderProgram() {
+        return shaderProgram;
+    }
+
+    public int getVaoId(){
+        return vaoId;
+    }
+
+    public int getIndexVboId(){
+        return indexVboId;
+    }
+
+    public String getName(){
+        return this.name;
     }
 
     public HashSet<VboData> getVboDataSet() {
