@@ -1,12 +1,10 @@
-package com.Basics;
+package com.Engine.GameObjects;
 
-import com.Rendering.GUI.Elements.TextField;
 import com.Rendering.Light.Material;
 import com.Rendering.Mesh.Mesh;
 import com.Rendering.Textures.Texture;
 import org.joml.*;
 
-import java.text.ParseException;
 import java.util.*;
 
 import static com.Basics.Utils.readFile;
@@ -19,17 +17,20 @@ public class OBJLoader {
 
     }
 
-    public Mesh loadMesh(String fileName){
-        return loadMeshesFromFile(fileName).getFirst();
+    public HashSet<Mesh> loadFullMesh(String fileName){
+        List<String> meshFile;
+
+        if(fileName.isEmpty()) meshFile = readFile("\\Resources\\Objects\\grass_block.mtl");
+        else meshFile = readFile("\\Resources\\Objects\\" + fileName);
+        //dunno if i need name
+
+        return loadMeshesFromFile(meshFile);
     }
 
-    private Map<String, Material> loadMaterialsFromFile(String fileName){
-        List<String> file;
+    private Map<String, Material> loadMaterialsFromFile(List<String> file){
+        file = preProcessFile(file);
         Map<String, Material> materials = new HashMap<>();
         List<String> currentMaterialFile = new ArrayList<>();
-        if(fileName.isEmpty()) file = readFile("\\Resources\\Objects\\grass_block.mtl");
-        else file = readFile("\\Resources\\Objects\\" + fileName);
-        file = preProcessFile(file);
 
         for(String line : file){
             if(line.startsWith("newmtl")){
@@ -46,21 +47,35 @@ public class OBJLoader {
         return materials;
     }
 
-    private Map<String, Mesh> loadMeshesFromFile(String fileName){
-        List<String> file;
-        Map<String, Mesh> meshes = new HashMap<>();
-        List<String> currentMeshFile = new ArrayList<>();
-        if(fileName.isEmpty()) file = readFile("\\Resources\\Objects\\grass_block.mtl");
-        else file = readFile("\\Resources\\Objects\\" + fileName);
+    private HashSet<Mesh> loadMeshesFromFile(List<String> file){
         file = preProcessFile(file);
+        List<String> materialFile = readFile(
+                "\\Resources\\Objects\\"
+                        +file.getFirst()
+                        .replace("mtllib", "")
+                        .trim());
 
-        boolean foundGroup = false;
+        Map<String, Material> materials = loadMaterialsFromFile(materialFile);
+        HashSet<Mesh> meshes = new HashSet<>();
+        final List<String> baseFaceData = new ArrayList<>();
+        List<String> currentMeshFile = new ArrayList<>();
+
         for(String line : file){
-            if(foundGroup){
+            if(!line.startsWith("f ")) baseFaceData.add(line);
+            else baseFaceData.add("");
+        }
 
-            } else {
 
+        for(String line : file){
+            if(line.startsWith("g ")){
+                if(!currentMeshFile.isEmpty()){
+                    currentMeshFile.addAll(baseFaceData);
+                    meshes.add(loadMesh(baseFaceData));
+                }
+                currentMeshFile.clear();
+                continue;
             }
+            if(line.startsWith("f ")) currentMeshFile.add(line);
         }
         return meshes;
     }
@@ -88,11 +103,11 @@ public class OBJLoader {
  */
 
     private Mesh loadMesh(List<String> file){
-
+        List<>
     }
 
     private Material loadMaterial(List<String> lines){
-        String name = lines.getFirst();
+        String name = lines.getFirst().trim();
         Material material;
 
         Vector4f ambientColor = getVec4f("Ka", lines, defaults.AMBIENT_COLOR).getFirst();

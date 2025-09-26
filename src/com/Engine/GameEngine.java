@@ -1,6 +1,6 @@
 package com.Engine;
 import com.Basics.Interface.FloatFunction;
-import com.Basics.OBJLoader;
+import com.Engine.GameObjects.OBJLoader;
 import com.Basics.Saving.GUIJsonWriter;
 import com.Engine.GameObjects.GameItem;
 import com.Engine.GameObjects.ObjectLoader;
