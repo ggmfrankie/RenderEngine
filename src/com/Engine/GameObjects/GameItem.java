@@ -5,6 +5,8 @@ import com.Rendering.Light.Material;
 import com.Rendering.Mesh.Mesh;
 import org.joml.Vector3f;
 
+import java.util.Arrays;
+
 public class GameItem {
     private final Mesh[] meshes;
     private Vector3f position;
@@ -12,7 +14,10 @@ public class GameItem {
     private Vector3f rotation;
     private UpdateAction updateAction;
 
-    public GameItem(Mesh[] mesh){
+    private final String name;
+
+    public GameItem(Mesh[] mesh, String name){
+        this.name = name;
         this.meshes = mesh;
         position = new Vector3f(0, 0, 0);
         scale = 1;
@@ -20,6 +25,7 @@ public class GameItem {
     }
 
     public GameItem(GameItem gameItem){
+        name = gameItem.getName();
         meshes = gameItem.getMeshes();
         position = new Vector3f(gameItem.getPosition());
         scale = gameItem.getScale();
@@ -29,7 +35,13 @@ public class GameItem {
 
     public void init(){
         for(Mesh mesh : meshes){
-            mesh.init();
+            try {
+                mesh.init();
+            } catch (NullPointerException npe){
+                System.out.println("GameItem "+ this.getName() +" with Mesh " + Arrays.toString(this.getMeshes()) + "had no valid material");
+                npe.printStackTrace();
+            }
+
         }
     }
 
@@ -87,12 +99,8 @@ public class GameItem {
         return meshes;
     }
 
-    public Vector3f getColor(){
-        return meshes[0].getColor();
-    }
-
-    public Material getMaterial(){
-        return meshes[0].getMaterial();
+    public String getName() {
+        return name;
     }
 
     public UpdateAction getUpdateAction() {

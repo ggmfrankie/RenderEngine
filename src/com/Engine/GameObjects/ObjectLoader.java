@@ -30,8 +30,8 @@ public class ObjectLoader {
     }
 
     public void loadObjects(){
-        addGameItemsManual();
         addGuiElementsFromFile();
+        addGameItemsManual();
     }
 
     private void addGuiElementsFromFile() {
@@ -50,18 +50,31 @@ public class ObjectLoader {
         float intensity = 0.5f;
 
         PointLight.Attenuation att = new PointLight.Attenuation(1.0f, 0.005f, 0.01f);
+        /*
         gameEngine.addGameItem(
+                "yacht",
+                new Vector3f(0.0f, -10.0f, 0.0f),
+                new Vector3f(0.0f, 0.0f, 0.0f),
+                "Marlow66.obj"
+        );
+         */
+
+        gameEngine.addGameItem(
+                "cube",
                 new Vector3f(0.0f, 0.0f, 0.0f),
                 new Vector3f(90.0f, 0.0f, 0.0f),
                 "grass_block.obj",
                 events.getUpdateAction("spin")
         );
-
+        /*
         gameEngine.addGameItem(
+                "sword",
                 new Vector3f(5.0f, -10.0f, 0.0f),
                 new Vector3f(0.0f, 0.0f, 0.0f),
                 "Sting-Sword-lowpoly.obj"
         );
+
+         */
         /*
         gameEngine.addGameItem(
                 new Vector3f(30.0f, -10.0f, 0.0f),
@@ -72,11 +85,7 @@ public class ObjectLoader {
 
          */
 
-        gameEngine.addGameItem(
-                new Vector3f(0.0f, -10.0f, 0.0f),
-                new Vector3f(0.0f, 0.0f, 0.0f),
-                "Marlow66.obj"
-        );
+
 
         gameEngine.addPointLight(color, position, intensity, att);
         gameEngine.addDirectionalLight(new DirectionalLight(color2, direction, 0.0f));

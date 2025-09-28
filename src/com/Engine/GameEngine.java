@@ -184,29 +184,30 @@ public class GameEngine implements Runnable{
         renderer.addGameItem(gameItem);
     }
 
-    public void addGameItem(Vector3f pos, Vector3f rotation, String fileName){
-        addGameItem(pos, rotation, 1.0f,null, fileName);
+    public void addGameItem(String name, Vector3f pos, Vector3f rotation, String fileName){
+        addGameItem(name, pos, rotation, 1.0f,null, fileName);
     }
 
-    public void addGameItem(Vector3f pos, Vector3f rotation, String fileName, float scale){
-        addGameItem(pos, rotation, scale, null, fileName);
+    public void addGameItem(String name, Vector3f pos, Vector3f rotation, String fileName, float scale){
+        addGameItem(name, pos, rotation, scale, null, fileName);
     }
 
-    public void addGameItem(Vector3f pos, Vector3f rotation, String fileName, UpdateAction updateAction){
-        addGameItem(pos, rotation, 1.0f, updateAction, fileName);
+    public void addGameItem(String name, Vector3f pos, Vector3f rotation, String fileName, UpdateAction updateAction){
+        addGameItem(name, pos, rotation, 1.0f, updateAction, fileName);
     }
 
-    public void addGameItem(Vector3f pos, Vector3f rotation, float scale, UpdateAction updateAction, String fileName){
-        HashSet<Mesh> meshes = objFileLoader.loadAllMeshes(fileName);
-        addGameItemRaw(pos, rotation, scale, updateAction, meshes);
+    public void addGameItem(String name, Vector3f pos, Vector3f rotation, float scale, UpdateAction updateAction, String fileName){
+        List<Mesh> meshes = objFileLoader.loadAllMeshes(fileName);
+        addGameItemRaw(name, pos, rotation, scale, updateAction, meshes);
     }
 
-    private void addGameItemRaw(Vector3f pos, Vector3f rotation, float scale, UpdateAction updateAction, HashSet<Mesh> meshes){
-        GameItem gameItem = new GameItem(meshes.toArray(new Mesh[0]));
+    private void addGameItemRaw(String name, Vector3f pos, Vector3f rotation, float scale, UpdateAction updateAction, List<Mesh> meshes){
+        GameItem gameItem = new GameItem(meshes.toArray(new Mesh[0]),name);
         gameItem.setPosition(pos);
         gameItem.setRotation(rotation);
         gameItem.setScale(scale);
         if(updateAction != null) gameItem.setUpdateAction(updateAction);
+        System.out.println(gameItem);
         renderer.addGameItem(gameItem);
     }
 
