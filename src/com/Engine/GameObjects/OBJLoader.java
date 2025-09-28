@@ -52,14 +52,12 @@ public class OBJLoader {
 
         for(String line : file){
             if(line.startsWith("usemtl")) currentMaterial = line.replace("usemtl", "").trim();
-            if(line.startsWith("g ")){
+            if(line.startsWith("g ") || line.startsWith("o ")){
                 if(!currentFaces.isEmpty()){
                     List<String> combined = new ArrayList<>(baseFaceData);
                     combined.addAll(currentFaces);
 
-                    System.out.println("Searching for material named: " +currentMaterial);
-                    meshes.add(loadMesh(combined, materials.get(currentMaterial)));
-                    System.out.println(materials.containsKey(currentMaterial));
+                    meshes.add(loadMesh(combined, materials.getOrDefault(currentMaterial, new Material("default"))));
                 }
                 currentFaces.clear();
                 currentFaces.add(line);
@@ -69,11 +67,17 @@ public class OBJLoader {
             if(!foundGroup) continue;
             if(line.startsWith("f ")) currentFaces.add(line);
         }
+        if(!currentFaces.isEmpty()){
+            List<String> combined = new ArrayList<>(baseFaceData);
+            combined.addAll(currentFaces);
+
+            meshes.add(loadMesh(combined, materials.getOrDefault(currentMaterial, new Material("default"))));
+        }
         return meshes;
     }
 
     private Mesh loadMesh(List<String> file, Material material){
-        String name = file.getFirst().replace("g ", "").trim();
+        String name = file.getFirst().replace("g ", "").replace("o ", "").trim();
         List<Vector3f> vertices;
         List<Vector2f> textures;
         List<Vector3f> normals;
@@ -374,7 +378,6 @@ public class OBJLoader {
         private final List<OBJLoader.IdxGroup> idxGroups;
 
         public Face(String substring) {
-            substring = substring.replace("f ", "");
             String[] vertexTokens = substring.split(" ");
 
             idxGroups = new ArrayList<>();
