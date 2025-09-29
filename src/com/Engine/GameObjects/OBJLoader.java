@@ -23,7 +23,7 @@ public class OBJLoader {
 
     }
 
-    public HashSet<Mesh> loadAllMeshes(String fileName){
+    public List<Mesh> loadAllMeshes(String fileName){
         List<String> meshFile;
 
         if(fileName.isEmpty()) meshFile = readFile("\\Resources\\Objects\\grass_block.mtl");
@@ -33,7 +33,7 @@ public class OBJLoader {
         return loadMeshesFromFile(meshFile);
     }
 
-    private HashSet<Mesh> loadMeshesFromFile(List<String> file){
+    private List<Mesh> loadMeshesFromFile(List<String> file){
         file = preProcessFile(file);
 
         List<String> materialFile = readFile(
@@ -68,7 +68,7 @@ public class OBJLoader {
         }
         System.out.println();
         materials = loadMaterialsFromFile(materialFile);
-        HashSet<Mesh> meshes = new HashSet<>();
+        List<Mesh> meshes = new ArrayList<>();
         List<String> currentFaces = new ArrayList<>();
 
         boolean foundGroup = false;

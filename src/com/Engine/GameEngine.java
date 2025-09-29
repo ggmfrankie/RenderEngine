@@ -37,6 +37,7 @@ public class GameEngine implements Runnable{
     IGameLogic gameLogic;
 
     OBJFileLoader objFileLoader;
+    OBJLoader objLoader;
     ObjectLoader objectLoader;
     Map<String, Mesh> existingMeshes;
 
@@ -51,6 +52,7 @@ public class GameEngine implements Runnable{
         mouseInput = new MouseInput();
         meshData = new ArrayList<>();
         objFileLoader = new OBJFileLoader();
+        objLoader = new OBJLoader();
 
         objectLoader = new ObjectLoader();
 

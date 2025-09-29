@@ -3,8 +3,10 @@ package com.Basics;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.util.List;
+
 public class Parsing {
-    public static Vector4f convertToVec4f(String line){
+    public static Vector4f parseVec4f(String line){
         String[] values = line.split(" ");
         Vector4f vec4 = new Vector4f();
         try{
@@ -20,7 +22,7 @@ public class Parsing {
         return vec4;
     }
 
-    public static Vector3f convertToVec3f(String line){
+    public static Vector3f parseVec3f(String line){
         String[] values = line.split(" ");
         Vector3f vec3 = new Vector3f();
         try{
@@ -33,5 +35,17 @@ public class Parsing {
             throw new RuntimeException();
         }
         return vec3;
+    }
+
+    public static List<Vector3f> parseVec3f(List<String> line){
+        return line.stream()
+                .map(Parsing::parseVec3f)
+                .toList();
+    }
+
+    public static List<Vector4f> parseVec4f(List<String> line){
+        return line.stream()
+                .map(Parsing::parseVec4f)
+                .toList();
     }
 }

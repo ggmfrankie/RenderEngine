@@ -4,14 +4,17 @@ import com.Basics.Parsing;
 import com.Rendering.Light.Material;
 import com.Rendering.Mesh.Mesh;
 import com.Rendering.Textures.Texture;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.Basics.Utils.readFile;
 
 public class OBJFileLoader {
+    Map<String, Material> materials;
     final boolean DEBUG = false;
     Defaults defaults = new Defaults();
 
@@ -36,8 +39,9 @@ public class OBJFileLoader {
                 "\\Resources\\Objects\\"
                         +getLinesWith("mtllib", file)
                         .getFirst()
-                        .replace("mtllib", "")
                         .trim());
+
+
         vertexSubstrings = getLinesWith("v", file);
         textureSubstrings = getLinesWith("vt", file);
         normalSubstrings = getLinesWith("vn", file);
@@ -46,7 +50,64 @@ public class OBJFileLoader {
         printFile(textureSubstrings);
         printFile(normalSubstrings);
 
+        materials = loadMaterialsFromFile(materialFile);
+
+        List<Mesh> meshes = new ArrayList<>();
+        List<String> currentFaces = new ArrayList<>();
+
+        boolean foundGroup = false;
+        String currentMaterial = "";
+
+        for(String line : file){
+            if(line.startsWith("usemtl")){
+                currentMaterial = line.replace("usemtl", "").trim();
+                continue;
+            }
+            if(line.startsWith("g ") || line.startsWith("o ")){
+                if(!currentFaces.isEmpty()){
+                    meshes.add(loadMesh(currentFaces, materials.getOrDefault(currentMaterial, new Material("default"))));
+                }
+                currentFaces = new ArrayList<>();
+                currentFaces.add(line);
+                foundGroup = true;
+                continue;
+            }
+            if(!foundGroup) continue;
+            if(line.startsWith("f ")) currentFaces.add(line);
+        }
+        if(!currentFaces.isEmpty()){
+            meshes.add(loadMesh(currentFaces, materials.getOrDefault(currentMaterial, new Material("default"))));
+        }
+        return meshes;
+    }
+
+    private Mesh loadMesh(List<String> file, Material material){
+        String name = file.getFirst().replace("g ", "").replace("o ", "").trim();
+
+        List<Vector3f> vertices;
+        List<Vector2f> textures;
+        List<Vector3f> normals;
+
+        List<Face> faces = new ArrayList<>();
+
+        List<Vector3f> finalPositions = new ArrayList<>();
+        List<Vector2f> finalTexCoords = new ArrayList<>();
+        List<Vector3f> finalNormals = new ArrayList<>();
+        List<Integer> indicesList= new ArrayList<>();
+
         return null;
+    }
+
+    private Map<String, Material> loadMaterialsFromFile(List<String> file){
+        file = preProcessFile(file);
+        return group(file, "newmtl").stream()
+                .map(this::loadMaterial)
+                .collect(Collectors.toMap(
+                        Material::getName,
+                        m -> m,
+                        (a, b) -> a,
+                        HashMap::new
+                ));
     }
 
     private Material loadMaterial(List<String> lines){
@@ -86,17 +147,37 @@ public class OBJFileLoader {
         return material;
     }
 
-    private List<String> preProcessFile(List<String> file){
-        List<String> processedFile = new ArrayList<>();
-        for (String s : file) {
-            String line = s
-                    .replaceAll("\\s+", " ")
-                    .replaceAll("#.*$", "")
-                    .trim();
-
-            processedFile.add(line);
+    private List<List<String>> group(List<String> list, String key){
+        boolean foundGroup = false;
+        List<List<String>> result = new ArrayList<>();
+        List<String> currentFile = new ArrayList<>();
+        for(String line : list){
+            if(line.startsWith(key)){
+                if(!currentFile.isEmpty()){
+                    result.add(currentFile);
+                }
+                currentFile.clear();
+                currentFile.add(line.replace(key, "").trim());
+                foundGroup = true;
+                _PRINT_("Adding to materialFile:");
+                _PRINT_(currentFile.getLast());
+                continue;
+            }
+            if(foundGroup) currentFile.add(line);
         }
-        return  processedFile;
+        if (!currentFile.isEmpty()) {
+            result.add(currentFile);
+        }
+        return result;
+    }
+
+    private List<String> preProcessFile(List<String> file){
+        return  file.stream()
+                .map(s -> s.replaceAll("\\s+", " "))
+                .map(s -> s.replaceAll("#.*$", ""))
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
+                .toList();
     }
 
     private void printFile(List<String> file){
@@ -115,7 +196,8 @@ public class OBJFileLoader {
         }
 
         return matchedLines.stream()
-                .map(Parsing::convertToVec4f)
+                .map(Parsing::parseVec3f)
+                .map(vec3f -> new Vector4f(vec3f, 1.0f))
                 .toList();
     }
 
@@ -182,5 +264,69 @@ public class OBJFileLoader {
     private void _PRINT_(){
         if(DEBUG) return;
         System.out.println();
+    }
+    private <T> void _PRINT_(T input){
+        if(DEBUG) return;
+        System.out.println(input.toString());
+    }
+
+    protected static class Face{
+        private final List<IdxGroup> idxGroups;
+
+        public Face(String substring){
+            substring = substring.replaceFirst("^f\\s+", "");
+            String[] vertexTokens = substring.split(" ");
+
+            idxGroups = new ArrayList<>();
+            for (String token : vertexTokens) {
+                idxGroups.add(parseVertexData(token));
+            }
+        }
+
+        private IdxGroup parseVertexData(String token){
+            String[] parts = token.split("/");
+
+            return new IdxGroup(
+                    Integer.parseInt(parts[0]),
+                    Integer.parseInt(parts[1]),
+                    Integer.parseInt(parts[2])
+            );
+        }
+    }
+
+    protected static record IdxGroup(int pos, int tex, int nor){
+
+    }
+
+    protected static class IdxGroup1{
+        public static final int NO_VALUE = -1;
+        public int idxPos;
+        public int idxTextCoord;
+        public int idxVecNormal;
+
+        public IdxGroup1(){
+            idxPos = NO_VALUE;
+            idxTextCoord = NO_VALUE;
+            idxVecNormal = NO_VALUE;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof OBJLoader.IdxGroup other)) return false;
+            return idxPos == other.idxPos &&
+                    idxTextCoord == other.idxTextCoord &&
+                    idxVecNormal == other.idxVecNormal;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(idxPos, idxTextCoord, idxVecNormal);
+        }
+
+        @Override
+        public String toString(){
+            return "idxPos: " +idxPos+ " idxTextcoord: " +idxTextCoord+ " idxVecNormal: " +idxVecNormal;
+        }
     }
 }

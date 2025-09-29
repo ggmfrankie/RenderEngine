@@ -56,6 +56,7 @@ public class ObjectLoader {
                 "grass_block.obj",
                 events.getUpdateAction("spin")
         );
+
         /*
         gameEngine.addGameItem(
                 new Vector3f(5.0f, -10.0f, 0.0f),
