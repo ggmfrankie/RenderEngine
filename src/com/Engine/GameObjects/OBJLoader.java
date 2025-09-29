@@ -14,6 +14,10 @@ public class OBJLoader {
     Map<String, Material> materials;
     Defaults defaults = new Defaults();
 
+    List<String> vertexSubstrings;
+    List<String> textureSubstrings;
+    List<String> normalSubstrings;
+
     public OBJLoader() {
 
     }
@@ -38,14 +42,13 @@ public class OBJLoader {
                         .replace("mtllib", "")
                         .trim());
 
-        Map<String, Material> materials = loadMaterialsFromFile(materialFile);
-        HashSet<Mesh> meshes = new HashSet<>();
-        final List<String> baseFaceData = new ArrayList<>();
-        List<String> currentFaces = new ArrayList<>();
+        vertexSubstrings = getLinesWith("v", file);
+        textureSubstrings = getLinesWith("vt", file);
+        normalSubstrings = getLinesWith("vn", file);
 
-        for(String line : file){
-            if(!line.startsWith("f ")) baseFaceData.add(line);
-        }
+        materials = loadMaterialsFromFile(materialFile);
+        HashSet<Mesh> meshes = new HashSet<>();
+        List<String> currentFaces = new ArrayList<>();
 
         boolean foundGroup = false;
         String currentMaterial = "";
@@ -54,10 +57,13 @@ public class OBJLoader {
             if(line.startsWith("usemtl")) currentMaterial = line.replace("usemtl", "").trim();
             if(line.startsWith("g ") || line.startsWith("o ")){
                 if(!currentFaces.isEmpty()){
-                    List<String> combined = new ArrayList<>(baseFaceData);
-                    combined.addAll(currentFaces);
 
-                    meshes.add(loadMesh(combined, materials.getOrDefault(currentMaterial, new Material("default"))));
+                    System.out.println();
+                    System.out.println();
+                    System.out.println("The list the mesh sees is: " +currentFaces);
+                    System.out.println();
+                    System.out.println();
+                    meshes.add(loadMesh(currentFaces, materials.getOrDefault(currentMaterial, new Material("default"))));
                 }
                 currentFaces.clear();
                 currentFaces.add(line);
@@ -68,10 +74,13 @@ public class OBJLoader {
             if(line.startsWith("f ")) currentFaces.add(line);
         }
         if(!currentFaces.isEmpty()){
-            List<String> combined = new ArrayList<>(baseFaceData);
-            combined.addAll(currentFaces);
 
-            meshes.add(loadMesh(combined, materials.getOrDefault(currentMaterial, new Material("default"))));
+            System.out.println("final mesh:");
+            System.out.println();
+            System.out.println("The list the mesh sees is: " +currentFaces);
+            System.out.println();
+            System.out.println();
+            meshes.add(loadMesh(currentFaces, materials.getOrDefault(currentMaterial, new Material("default"))));
         }
         return meshes;
     }
@@ -92,9 +101,7 @@ public class OBJLoader {
 
         List<String> faceSubstrings = getLinesWith("f", file);
 
-        List<String> vertexSubstrings = getLinesWith("v", file);
-        List<String> textureSubstrings = getLinesWith("vt", file);
-        List<String> normalSubstrings = getLinesWith("vn", file);
+
 
         vertices = parseV3(vertexSubstrings);
         textures = parseV2(textureSubstrings);
@@ -102,10 +109,13 @@ public class OBJLoader {
 
         for(String faceString : faceSubstrings){
             faces.add(new Face(faceString));
+            System.out.println(faceString);
+            for (IdxGroup idx : new Face(faceString).getFaceVertexIndices()) {
+                System.out.println("v:" + idx.idxPos + " vt:" + idx.idxTextCoord + " vn:" + idx.idxVecNormal);
+            }
         }
         for (Face face : faces) {
             List<Face> triangles = face.triangulate();
-
             for (Face triangle : triangles) {
                 for (IdxGroup idx : triangle.getFaceVertexIndices()) {
                     if (!uniqueVertexMap.containsKey(idx)) {
@@ -121,11 +131,16 @@ public class OBJLoader {
             }
         }
 
+        float[] vertexPositions = flattenListVec3(finalPositions);
+        float[] textureCoordinates = flattenListVec2(finalTexCoords);
+        float[] normalValues = flattenListVec3(finalNormals);
+        int[] indicesArray = indicesList.stream().mapToInt(Integer::intValue).toArray();
+
         MeshData meshData = new MeshData(
-                flattenListVec3(finalPositions),
-                flattenListVec2(finalTexCoords),
-                flattenListVec3(finalNormals),
-                indicesList.stream().mapToInt(Integer::intValue).toArray(),
+                vertexPositions,
+                textureCoordinates,
+                normalValues,
+                indicesArray,
                 material
         );
 

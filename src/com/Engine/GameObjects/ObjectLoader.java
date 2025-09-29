@@ -56,12 +56,14 @@ public class ObjectLoader {
                 "grass_block.obj",
                 events.getUpdateAction("spin")
         );
-
+        /*
         gameEngine.addGameItem(
                 new Vector3f(5.0f, -10.0f, 0.0f),
                 new Vector3f(0.0f, 0.0f, 0.0f),
                 "Sting-Sword-lowpoly.obj"
         );
+
+         */
         /*
         gameEngine.addGameItem(
                 new Vector3f(30.0f, -10.0f, 0.0f),
@@ -69,14 +71,15 @@ public class ObjectLoader {
                 "Humvee.obj",
                 0.1f
         );
-
          */
-
+        /*
         gameEngine.addGameItem(
                 new Vector3f(0.0f, -10.0f, 0.0f),
                 new Vector3f(0.0f, 0.0f, 0.0f),
                 "Marlow66.obj"
         );
+
+         */
 
         gameEngine.addPointLight(color, position, intensity, att);
         gameEngine.addDirectionalLight(new DirectionalLight(color2, direction, 0.0f));
