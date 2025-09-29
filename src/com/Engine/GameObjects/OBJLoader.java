@@ -6,6 +6,7 @@ import com.Rendering.Mesh.MeshData;
 import com.Rendering.Textures.Texture;
 import org.joml.*;
 
+import java.lang.Math;
 import java.util.*;
 
 import static com.Basics.Utils.*;
@@ -98,35 +99,58 @@ public class OBJLoader {
         List<Integer> indicesList= new ArrayList<>();
 
         Map<IdxGroup, Integer> uniqueVertexMap = new HashMap<>();
-
-        List<String> faceSubstrings = getLinesWith("f", file);
-
-
+        System.out.println("________________________________ yooo");
+        System.out.println("File: " +file);
 
         vertices = parseV3(vertexSubstrings);
         textures = parseV2(textureSubstrings);
         normals = parseV3(normalSubstrings);
 
-        for(String faceString : faceSubstrings){
-            faces.add(new Face(faceString));
-            System.out.println(faceString);
+        List<String> testFaces = new ArrayList<>();
+
+        for(String faceString : file){
+            if(!faceString.startsWith("f ")) continue;
+
+            faces.add(new Face(faceString.replace("f ", "")));
+            String[] faceStrings = faceString.split(" ");
+
+            for(String s : faceStrings){
+                if(s.startsWith("f")) continue;
+                testFaces.add(s);
+            }
+            //System.out.println(faceString);
+            /*
             for (IdxGroup idx : new Face(faceString).getFaceVertexIndices()) {
                 System.out.println("v:" + idx.idxPos + " vt:" + idx.idxTextCoord + " vn:" + idx.idxVecNormal);
             }
+
+             */
         }
+
+        int counter = 0;
         for (Face face : faces) {
             List<Face> triangles = face.triangulate();
             for (Face triangle : triangles) {
                 for (IdxGroup idx : triangle.getFaceVertexIndices()) {
+                    // ensure unique combo
                     if (!uniqueVertexMap.containsKey(idx)) {
                         uniqueVertexMap.put(idx, finalPositions.size());
-                        finalPositions.add(vertices.get(idx.idxPos - 1));
-                        if(idx.idxTextCoord-1 > -1){
-                            finalTexCoords.add(textures.get(idx.idxTextCoord - 1));
-                        }
-                        finalNormals.add(normals.get(idx.idxVecNormal - 1));
+
+                        // careful: OBJ indices are 1-based
+                        Vector3f pos = vertices.get(idx.idxPos - 1);
+                        Vector2f tex = (idx.idxTextCoord >= 0) ? textures.get(idx.idxTextCoord - 1) : new Vector2f(0, 0);
+                        Vector3f norm = (idx.idxVecNormal >= 0) ? normals.get(idx.idxVecNormal - 1) : new Vector3f(0, 0, 0);
+
+                        finalPositions.add(pos);
+                        finalTexCoords.add(tex);
+                        finalNormals.add(norm);
                     }
                     indicesList.add(uniqueVertexMap.get(idx));
+
+                    // debug
+                    System.out.println("--------------------------------");
+                    System.out.println("Unique#" + counter + " " + idx);
+                    counter++;
                 }
             }
         }
@@ -135,6 +159,28 @@ public class OBJLoader {
         float[] textureCoordinates = flattenListVec2(finalTexCoords);
         float[] normalValues = flattenListVec3(finalNormals);
         int[] indicesArray = indicesList.stream().mapToInt(Integer::intValue).toArray();
+
+        float[] pos = vertexPositions; // flattenListVec3(...)
+        System.out.println("VertexPositions:");
+        System.out.println(Arrays.toString(vertexPositions));
+        float[] uv = textureCoordinates; // flattenListVec2(...)
+        System.out.println("TextureCoordinates");
+        System.out.println(Arrays.toString(textureCoordinates));
+        float[] n = normalValues; // flattenListVec3(...)
+        System.out.println("NormalValues");
+        System.out.println(Arrays.toString(normalValues));
+        for (int i = 0; i < Math.min(10, pos.length/3); i++) {
+            System.out.printf("v[%d]=(%f,%f,%f) uv=(%f,%f) n=(%f,%f,%f)%n",
+                    i, pos[i*3], pos[i*3+1], pos[i*3+2],
+                    uv[i*2], uv[i*2+1],
+                    n[i*3], n[i*3+1], n[i*3+2]);
+        }
+
+        System.out.println("Verts: " + (vertexPositions.length / 3));
+        System.out.println("UVs:   " + (textureCoordinates.length / 2));
+        System.out.println("Norms: " + (normalValues.length / 3));
+        System.out.println("Indices: " + indicesArray.length);
+
 
         MeshData meshData = new MeshData(
                 vertexPositions,
@@ -332,7 +378,7 @@ public class OBJLoader {
 
         } catch (Exception e){
             System.out.println("Error converting Vec3 to float: " +line);
-            return null;
+            throw new RuntimeException();
         }
         return vec3;
     }
@@ -345,7 +391,7 @@ public class OBJLoader {
             vec3.y = Integer.parseInt(values[1]);
             vec3.z = Integer.parseInt(values[2]);
         } catch (Exception e){
-            return null;
+            throw new RuntimeException();
         }
         return vec3;
     }
@@ -357,7 +403,7 @@ public class OBJLoader {
             vec2.x = Float.parseFloat(values[0]);
             vec2.y = Float.parseFloat(values[1]);
         } catch (Exception e){
-            return null;
+            throw new RuntimeException();
         }
         return vec2;
     }
@@ -425,6 +471,7 @@ public class OBJLoader {
             group.idxPos = parts.length > 0 && !parts[0].isEmpty() ? Integer.parseInt(parts[0]) : -1;
             group.idxTextCoord = parts.length > 1 && !parts[1].isEmpty() ? Integer.parseInt(parts[1]) : -1;
             group.idxVecNormal = parts.length > 2 && !parts[2].isEmpty() ? Integer.parseInt(parts[2]) : -1;
+
             return group;
         }
 
@@ -457,6 +504,11 @@ public class OBJLoader {
         @Override
         public int hashCode() {
             return Objects.hash(idxPos, idxTextCoord, idxVecNormal);
+        }
+
+        @Override
+        public String toString(){
+            return "idxPos: " +idxPos+ " idxTextcoord: " +idxTextCoord+ " idxVecNormal: " +idxVecNormal;
         }
     }
 }
