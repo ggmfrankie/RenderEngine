@@ -47,6 +47,26 @@ public class OBJLoader {
         textureSubstrings = getLinesWith("vt", file);
         normalSubstrings = getLinesWith("vn", file);
 
+        System.out.println("VertexSubstrings:");
+        System.out.println();
+        for (String ver : vertexSubstrings) {
+            System.out.println(ver);
+        }
+        System.out.println();
+
+        System.out.println("TextureSubstrings:");
+        System.out.println();
+        for (String tex : textureSubstrings) {
+            System.out.println(tex);
+        }
+        System.out.println();
+
+        System.out.println("NormalSubstrings:");
+        System.out.println();
+        for (String norm : normalSubstrings) {
+            System.out.println(norm);
+        }
+        System.out.println();
         materials = loadMaterialsFromFile(materialFile);
         HashSet<Mesh> meshes = new HashSet<>();
         List<String> currentFaces = new ArrayList<>();
@@ -66,7 +86,7 @@ public class OBJLoader {
                     System.out.println();
                     meshes.add(loadMesh(currentFaces, materials.getOrDefault(currentMaterial, new Material("default"))));
                 }
-                currentFaces.clear();
+                currentFaces = new ArrayList<>();
                 currentFaces.add(line);
                 foundGroup = true;
                 continue;
@@ -128,25 +148,27 @@ public class OBJLoader {
         }
 
         int counter = 0;
+        int i = 0;
         for (Face face : faces) {
             List<Face> triangles = face.triangulate();
             for (Face triangle : triangles) {
+
                 for (IdxGroup idx : triangle.getFaceVertexIndices()) {
                     // ensure unique combo
-                    if (!uniqueVertexMap.containsKey(idx)) {
+                    {
                         uniqueVertexMap.put(idx, finalPositions.size());
 
                         // careful: OBJ indices are 1-based
                         Vector3f pos = vertices.get(idx.idxPos - 1);
-                        Vector2f tex = (idx.idxTextCoord >= 0) ? textures.get(idx.idxTextCoord - 1) : new Vector2f(0, 0);
-                        Vector3f norm = (idx.idxVecNormal >= 0) ? normals.get(idx.idxVecNormal - 1) : new Vector3f(0, 0, 0);
+                        Vector2f tex = textures.get(idx.idxTextCoord - 1);
+                        Vector3f norm = normals.get(idx.idxVecNormal - 1);
 
                         finalPositions.add(pos);
                         finalTexCoords.add(tex);
                         finalNormals.add(norm);
                     }
-                    indicesList.add(uniqueVertexMap.get(idx));
-
+                    indicesList.add(i);
+                    i++;
                     // debug
                     System.out.println("--------------------------------");
                     System.out.println("Unique#" + counter + " " + idx);
@@ -169,11 +191,11 @@ public class OBJLoader {
         float[] n = normalValues; // flattenListVec3(...)
         System.out.println("NormalValues");
         System.out.println(Arrays.toString(normalValues));
-        for (int i = 0; i < Math.min(10, pos.length/3); i++) {
+        for (int e = 0; e < Math.min(10, pos.length/3); e++) {
             System.out.printf("v[%d]=(%f,%f,%f) uv=(%f,%f) n=(%f,%f,%f)%n",
-                    i, pos[i*3], pos[i*3+1], pos[i*3+2],
-                    uv[i*2], uv[i*2+1],
-                    n[i*3], n[i*3+1], n[i*3+2]);
+                    e, pos[e*3], pos[e*3+1], pos[e*3+2],
+                    uv[e*2], uv[e*2+1],
+                    n[e*3], n[e*3+1], n[e*3+2]);
         }
 
         System.out.println("Verts: " + (vertexPositions.length / 3));
@@ -439,6 +461,7 @@ public class OBJLoader {
         private final List<OBJLoader.IdxGroup> idxGroups;
 
         public Face(String substring) {
+            substring = substring.replaceFirst("^f\\s+", "");
             String[] vertexTokens = substring.split(" ");
 
             idxGroups = new ArrayList<>();
@@ -510,5 +533,7 @@ public class OBJLoader {
         public String toString(){
             return "idxPos: " +idxPos+ " idxTextcoord: " +idxTextCoord+ " idxVecNormal: " +idxVecNormal;
         }
+
+
     }
 }

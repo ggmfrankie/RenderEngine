@@ -1,5 +1,6 @@
 package com.Engine;
 import com.Basics.Interface.FloatFunction;
+import com.Engine.GameObjects.OBJFileLoader;
 import com.Engine.GameObjects.OBJLoader;
 import com.Basics.Saving.GUIJsonWriter;
 import com.Engine.GameObjects.GameItem;
@@ -35,7 +36,7 @@ public class GameEngine implements Runnable{
     MouseInput mouseInput;
     IGameLogic gameLogic;
 
-    OBJLoader objFileLoader;
+    OBJFileLoader objFileLoader;
     ObjectLoader objectLoader;
     Map<String, Mesh> existingMeshes;
 
@@ -49,7 +50,7 @@ public class GameEngine implements Runnable{
         guiRenderer = new GUIRenderer();
         mouseInput = new MouseInput();
         meshData = new ArrayList<>();
-        objFileLoader = new OBJLoader();
+        objFileLoader = new OBJFileLoader();
 
         objectLoader = new ObjectLoader();
 
@@ -197,11 +198,11 @@ public class GameEngine implements Runnable{
     }
 
     public void addGameItem(Vector3f pos, Vector3f rotation, float scale, UpdateAction updateAction, String fileName){
-        HashSet<Mesh> meshes = objFileLoader.loadAllMeshes(fileName);
+        List<Mesh> meshes = objFileLoader.loadAllMeshes(fileName);
         addGameItemRaw(pos, rotation, scale, updateAction, meshes);
     }
 
-    private void addGameItemRaw(Vector3f pos, Vector3f rotation, float scale, UpdateAction updateAction, HashSet<Mesh> meshes){
+    private void addGameItemRaw(Vector3f pos, Vector3f rotation, float scale, UpdateAction updateAction, List<Mesh> meshes){
         GameItem gameItem = new GameItem(meshes.toArray(new Mesh[0]));
         gameItem.setPosition(pos);
         gameItem.setRotation(rotation);
