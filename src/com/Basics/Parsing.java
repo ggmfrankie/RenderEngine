@@ -1,5 +1,6 @@
 package com.Basics;
 
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -37,15 +38,35 @@ public class Parsing {
         return vec3;
     }
 
+    public static Vector2f parseVec2f(String line){
+        String[] values = line.split(" ");
+        Vector2f vec2 = new Vector2f();
+        try{
+            vec2.x = Float.parseFloat(values[0]);
+            vec2.y = Float.parseFloat(values[1]);
+
+        } catch (Exception e){
+            System.out.println("Error converting Vec3 to float: " +line);
+            throw new RuntimeException();
+        }
+        return vec2;
+    }
+
+    public static List<Vector4f> parseVec4f(List<String> line){
+        return line.stream()
+                .map(Parsing::parseVec4f)
+                .toList();
+    }
+
     public static List<Vector3f> parseVec3f(List<String> line){
         return line.stream()
                 .map(Parsing::parseVec3f)
                 .toList();
     }
 
-    public static List<Vector4f> parseVec4f(List<String> line){
+    public static List<Vector2f> parseVec2f(List<String> line){
         return line.stream()
-                .map(Parsing::parseVec4f)
+                .map(Parsing::parseVec2f)
                 .toList();
     }
 }

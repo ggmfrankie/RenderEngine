@@ -3,6 +3,7 @@ package com.Engine.GameObjects;
 import com.Basics.Parsing;
 import com.Rendering.Light.Material;
 import com.Rendering.Mesh.Mesh;
+import com.Rendering.Mesh.MeshData;
 import com.Rendering.Textures.Texture;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -11,11 +12,13 @@ import org.joml.Vector4f;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.Basics.Utils.readFile;
+import static com.Basics.Parsing.parseVec2f;
+import static com.Basics.Parsing.parseVec3f;
+import static com.Basics.Utils.*;
 
 public class OBJFileLoader {
     Map<String, Material> materials;
-    final boolean DEBUG = false;
+    final boolean DEBUG = true;
     Defaults defaults = new Defaults();
 
     List<String> vertexSubstrings;
@@ -84,18 +87,44 @@ public class OBJFileLoader {
     private Mesh loadMesh(List<String> file, Material material){
         String name = file.getFirst().replace("g ", "").replace("o ", "").trim();
 
-        List<Vector3f> vertices;
-        List<Vector2f> textures;
-        List<Vector3f> normals;
+        List<Vector3f> vertices = parseVec3f(vertexSubstrings);
+        List<Vector2f> textures = parseVec2f(textureSubstrings);
+        List<Vector3f> normals = parseVec3f(normalSubstrings);
 
-        List<Face> faces = new ArrayList<>();
+        _PRINT_("All data:");
+        printFile(vertices);
+        printFile(textures);
+        printFile(normals);
 
         List<Vector3f> finalPositions = new ArrayList<>();
         List<Vector2f> finalTexCoords = new ArrayList<>();
         List<Vector3f> finalNormals = new ArrayList<>();
         List<Integer> indicesList= new ArrayList<>();
 
-        return null;
+        List<Face> faces = file.stream().filter(s -> s.startsWith("f ")).map(Face::new).toList();
+
+        for(Face polygon : faces){
+            List<Face> triangles = polygon.triangulatePolygons();
+            for(Face triangle : triangles){
+                _PRINT_("This is a triangle:");
+                printFile(triangle.idxGroups);
+                for(IdxGroup idx : triangle.idxGroups){
+                    finalPositions.add(vertices.get(idx.pos - 1));
+                    finalTexCoords.add(textures.get(idx.tex - 1));
+                    finalNormals.add(normals.get(idx.nor - 1));
+                    indicesList.add(finalPositions.size()-1);
+                }
+            }
+        }
+        MeshData meshData = new MeshData(
+                flattenListVec3(finalPositions),
+                flattenListVec2(finalTexCoords),
+                flattenListVec3(finalNormals),
+                indicesList.stream().mapToInt(Integer::intValue).toArray(),
+                material
+        );
+
+        return new Mesh(meshData, name);
     }
 
     private Map<String, Material> loadMaterialsFromFile(List<String> file){
@@ -180,9 +209,9 @@ public class OBJFileLoader {
                 .toList();
     }
 
-    private void printFile(List<String> file){
+    private <T> void printFile(List<T> file){
         _PRINT_();
-        for(String s : file){
+        for(T s : file){
             _PRINT_(s);
         }
         _PRINT_();
@@ -258,15 +287,15 @@ public class OBJFileLoader {
     }
 
     private void _PRINT_(String s){
-        if(DEBUG) return;
+        if(!DEBUG) return;
         System.out.println(s);
     }
     private void _PRINT_(){
-        if(DEBUG) return;
+        if(!DEBUG) return;
         System.out.println();
     }
     private <T> void _PRINT_(T input){
-        if(DEBUG) return;
+        if(!DEBUG) return;
         System.out.println(input.toString());
     }
 
@@ -274,13 +303,32 @@ public class OBJFileLoader {
         private final List<IdxGroup> idxGroups;
 
         public Face(String substring){
-            substring = substring.replaceFirst("^f\\s+", "");
-            String[] vertexTokens = substring.split(" ");
+            String[] vertexTokens = substring
+                    .replaceFirst("^f\\s+", "")
+                    .split(" ");
 
             idxGroups = new ArrayList<>();
             for (String token : vertexTokens) {
                 idxGroups.add(parseVertexData(token));
             }
+        }
+
+        private Face(IdxGroup idxGroup0, IdxGroup idxGroup1, IdxGroup idxGroup2){
+            idxGroups = List.of(idxGroup0, idxGroup1, idxGroup2);
+        }
+
+        public List<Face> triangulatePolygons(){
+            if(idxGroups.size() <= 3) return List.of(this);
+            List<Face> result = new ArrayList<>();
+            for(int i = 1 ; i < idxGroups.size()-1 ; i++){
+                Face face = new Face(
+                        idxGroups.getFirst(),
+                        idxGroups.get(i),
+                        idxGroups.get(i+1)
+                );
+                result.add(face);
+            }
+            return result;
         }
 
         private IdxGroup parseVertexData(String token){
@@ -294,9 +342,7 @@ public class OBJFileLoader {
         }
     }
 
-    protected static record IdxGroup(int pos, int tex, int nor){
-
-    }
+    protected record IdxGroup(int pos, int tex, int nor){}
 
     protected static class IdxGroup1{
         public static final int NO_VALUE = -1;
