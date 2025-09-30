@@ -163,9 +163,22 @@ public class ShaderProgram {
         createUniforms(uniformName + ".ambient");
         createUniforms(uniformName + ".diffuse");
         createUniforms(uniformName + ".specular");
+        createUniforms(uniformName + ".emission");
+        createUniforms(uniformName + ".specularExponent");
+        createUniforms(uniformName + ".opticalDensity");
+        createUniforms(uniformName + ".dissolve");
         createUniforms(uniformName + ".hasTexture");
-        createUniforms(uniformName + ".reflectance");
+
     }
+
+
+//    public void createMaterialUniform(String uniformName) throws Exception {
+//        createUniforms(uniformName + ".ambient");
+//        createUniforms(uniformName + ".diffuse");
+//        createUniforms(uniformName + ".specular");
+//        createUniforms(uniformName + ".hasTexture");
+//        createUniforms(uniformName + ".reflectance");
+//    }
 
     public void createNinePatchUniform(String uniformName) throws Exception {
         createUniforms(uniformName + ".stretchStartX");
@@ -201,13 +214,26 @@ public class ShaderProgram {
         setUniform(uniformName + ".att.exponent", att.getExponent());
     }
 
+//    public void setUniform(String uniformName, Material material) {
+//        setUniform(uniformName + ".ambient", material.getAmbientColor());
+//        setUniform(uniformName + ".diffuse", material.getDiffuseColor());
+//        setUniform(uniformName + ".specular", material.getSpecularColor());
+//        setUniform(uniformName + ".hasTexture", material.hasTexture() ? 1 : 0);
+//        setUniform(uniformName + ".reflectance", material.getSpecularExponent());
+//    }
+
     public void setUniform(String uniformName, Material material) {
         setUniform(uniformName + ".ambient", material.getAmbientColor());
         setUniform(uniformName + ".diffuse", material.getDiffuseColor());
         setUniform(uniformName + ".specular", material.getSpecularColor());
+        setUniform(uniformName + ".emission", material.getEmissionColor());
+        setUniform(uniformName + ".specularExponent", material.getSpecularExponent());
+        setUniform(uniformName + ".opticalDensity", material.getOpticalDensity());
+        setUniform(uniformName + ".dissolve", material.getDissolve());
         setUniform(uniformName + ".hasTexture", material.hasTexture() ? 1 : 0);
-        setUniform(uniformName + ".reflectance", material.getSpecularExponent());
     }
+
+
 
     public void setUniform(String uniformName, DirectionalLight dirLight) {
         setUniform(uniformName + ".color", dirLight.getColor() );

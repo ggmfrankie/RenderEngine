@@ -67,7 +67,7 @@ public class Renderer {
 
     public void init() throws Exception{
         debugPrint("initializing Renderer");
-        String fragmentShaderCode = loadShaderFile("FragmentShader.glsl");
+        String fragmentShaderCode = loadShaderFile("ImprovedFragmentShader.glsl");
         String vertexShaderCode = loadShaderFile("VertexShader.glsl");
 
         glEnable(GL_DEPTH_TEST);
@@ -119,9 +119,9 @@ public class Renderer {
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
 
         shaderProgram.setUniform("projectionMatrix", projectionMatrix);
-        shaderProgram.setUniform("pointLight", transformation.getPointLight(pointLight));
-        shaderProgram.setUniform("directionalLight", transformation.getDirectionalLight(directionalLight));
-        shaderProgram.setUniform("spotLight", transformation.getSpotLight(spotLight));
+        if(pointLight != null) shaderProgram.setUniform("pointLight", transformation.getPointLight(pointLight));
+        if(directionalLight != null) shaderProgram.setUniform("directionalLight", transformation.getDirectionalLight(directionalLight));
+        if(spotLight != null) shaderProgram.setUniform("spotLight", transformation.getSpotLight(spotLight));
 
         for (GameItem gameItem : gameItems) {
 

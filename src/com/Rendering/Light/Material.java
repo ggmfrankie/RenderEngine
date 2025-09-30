@@ -71,6 +71,22 @@ public class Material {
         this.illum = 2;
     }
 
+    public Vector4f getEmissionColor() {
+        return emissionColor;
+    }
+
+    public float getOpticalDensity() {
+        return opticalDensity;
+    }
+
+    public float getDissolve() {
+        return dissolve;
+    }
+
+    public int getIllum() {
+        return illum;
+    }
+
     public Vector4f getAmbientColor() {
         return ambientColor;
     }

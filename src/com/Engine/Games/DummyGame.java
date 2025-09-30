@@ -78,7 +78,7 @@ public class DummyGame implements IGameLogic {
     @Override
     public void update(float interval, MouseInput mouseInput) {
         updateCamera(mouseInput);
-        updateDirectionalLight();
+        if(directionalLight != null) updateDirectionalLight();
         updateObjects();
     }
 
@@ -106,7 +106,7 @@ public class DummyGame implements IGameLogic {
                 lightAngle = -90;
             }
         } else if (lightAngle <= -80 || lightAngle >= 80) {
-            float factor = 1 - (float)(Math.abs(lightAngle) - 80)/ 10.0f;
+            float factor = (1 - (float)(Math.abs(lightAngle) - 80)/ 10.0f);
             directionalLight.setIntensity(factor);
             directionalLight.getColor().y = Math.max(factor/2, 0.9f);
             directionalLight.getColor().z = Math.max(factor/2, 0.5f);

@@ -76,7 +76,8 @@ void main() {
     diffuseSpecularComp += calcPointLight(pointLight, mvVertexPos, mvVertexNormal);
     diffuseSpecularComp += calcSpotLight(spotLight, mvVertexPos, mvVertexNormal);
 
-    fragColor = max(ambientC * vec4(ambientLight, 1.0) + diffuseSpecularComp, baseLight);
+    fragColor = ambientC * vec4(ambientLight, 1.0) + diffuseSpecularComp;
+
     #ifdef INTEGRATED_GPU
     fragColor = vec4(mvVertexNormal * 0.5 + 0.5, 1.0);
     #endif

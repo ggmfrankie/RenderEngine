@@ -54,6 +54,10 @@ public class OBJFileLoader {
         printFile(normalSubstrings);
 
         materials = loadMaterialsFromFile(materialFile);
+        _PRINT_("Generated materials:");
+        printFile(materials.values().stream().map(Material::getName).toList());
+        _PRINT_("Material file:");
+        printFile(materialFile);
 
         List<Mesh> meshes = new ArrayList<>();
         List<String> currentFaces = new ArrayList<>();
@@ -91,10 +95,10 @@ public class OBJFileLoader {
         List<Vector2f> textures = parseVec2f(textureSubstrings);
         List<Vector3f> normals = parseVec3f(normalSubstrings);
 
-        _PRINT_("All data:");
-        printFile(vertices);
-        printFile(textures);
-        printFile(normals);
+        //_PRINT_("All data:");
+        //printFile(vertices);
+        //printFile(textures);
+        //printFile(normals);
 
         List<Vector3f> finalPositions = new ArrayList<>();
         List<Vector2f> finalTexCoords = new ArrayList<>();
@@ -106,8 +110,8 @@ public class OBJFileLoader {
         for(Face polygon : faces){
             List<Face> triangles = polygon.triangulatePolygons();
             for(Face triangle : triangles){
-                _PRINT_("This is a triangle:");
-                printFile(triangle.idxGroups);
+                //_PRINT_("This is a triangle:");
+                //printFile(triangle.idxGroups);
                 for(IdxGroup idx : triangle.idxGroups){
                     finalPositions.add(vertices.get(idx.pos - 1));
                     finalTexCoords.add(textures.get(idx.tex - 1));
@@ -117,11 +121,12 @@ public class OBJFileLoader {
             }
         }
         MeshData meshData = generateMeshData(
-                finalPositions,
+                finalPositions.toArray(new Vector3f[0]),
                 finalTexCoords,
                 finalNormals,
-                indicesList
-        )
+                indicesList,
+                material
+        );
 
         return new Mesh(meshData, name);
     }
@@ -139,11 +144,15 @@ public class OBJFileLoader {
     }
 
     private Material loadMaterial(List<String> lines){
-        String name = lines.getFirst().trim();
-        _PRINT_("---------------------------");
-        _PRINT_("New material: " +name);
-        _PRINT_("With file:");
-        _PRINT_(String.valueOf(lines));
+        String header = lines.getFirst();
+        String name = header.replace("newmtl", "").trim();
+        if(false){
+            _PRINT_("---------------------------");
+            _PRINT_("New material: " +name);
+            _PRINT_("With file:");
+            _PRINT_(String.valueOf(lines));
+        }
+
         Material material;
 
         Vector4f ambientColor = getVec4f("Ka", lines, defaults.AMBIENT_COLOR).getFirst();
@@ -215,11 +224,9 @@ public class OBJFileLoader {
                 if(!currentFile.isEmpty()){
                     result.add(currentFile);
                 }
-                currentFile.clear();
-                currentFile.add(line.replace(key, "").trim());
+                currentFile = new ArrayList<>();
+                currentFile.add(line.trim());
                 foundGroup = true;
-                _PRINT_("Adding to materialFile:");
-                _PRINT_(currentFile.getLast());
                 continue;
             }
             if(foundGroup) currentFile.add(line);
@@ -363,12 +370,10 @@ public class OBJFileLoader {
 
         private IdxGroup parseVertexData(String token){
             String[] parts = token.split("/");
-
-            return new IdxGroup(
-                    Integer.parseInt(parts[0]),
-                    Integer.parseInt(parts[1]),
-                    Integer.parseInt(parts[2])
-            );
+            int pos = Integer.parseInt(parts[0]);
+            int tex = parts.length > 1 && !parts[1].isEmpty() ? Integer.parseInt(parts[1]) : 0;
+            int nor = parts.length > 2 && !parts[2].isEmpty() ? Integer.parseInt(parts[2]) : 0;
+            return new IdxGroup(pos, tex, nor);
         }
     }
 
