@@ -116,13 +116,12 @@ public class OBJFileLoader {
                 }
             }
         }
-        MeshData meshData = new MeshData(
-                flattenListVec3(finalPositions),
-                flattenListVec2(finalTexCoords),
-                flattenListVec3(finalNormals),
-                indicesList.stream().mapToInt(Integer::intValue).toArray(),
-                material
-        );
+        MeshData meshData = generateMeshData(
+                finalPositions,
+                finalTexCoords,
+                finalNormals,
+                indicesList
+        )
 
         return new Mesh(meshData, name);
     }
@@ -174,6 +173,37 @@ public class OBJFileLoader {
                 texture
         );
         return material;
+    }
+
+    private MeshData generateMeshData(Vector3f[] verticesArray, List<Vector2f> texturesList, List<Vector3f> normalsList, List<Integer> indicesList, Material material){
+        float[] vertexArray = new float[verticesArray.length * 3];
+        float[] texturesArray = new float[verticesArray.length * 2];
+        float[] normalsArray = new float[verticesArray.length * 3];
+        int[] indexArray = indicesList.stream().mapToInt(Integer::intValue).toArray();
+        int i = 0;
+        for(Vector3f vec3 : verticesArray){
+            vertexArray[i * 3] = vec3.x;
+            vertexArray[i * 3 + 1] = vec3.y;
+            vertexArray[i * 3 + 2] = vec3.z;
+            i++;
+        }
+
+        i = 0;
+        for(Vector2f vec2 : texturesList){
+            texturesArray[i * 2] = vec2.x;
+            texturesArray[i * 2 + 1] = 1 - vec2.y;
+            i++;
+        }
+
+        i = 0;
+        for(Vector3f vec3 : normalsList){
+            normalsArray[i * 3] = vec3.x;
+            normalsArray[i * 3 + 1] = vec3.y;
+            normalsArray[i * 3 + 2] = vec3.z;
+            i++;
+        }
+
+        return new MeshData(vertexArray, normalsArray, texturesArray, indexArray, material);
     }
 
     private List<List<String>> group(List<String> list, String key){
