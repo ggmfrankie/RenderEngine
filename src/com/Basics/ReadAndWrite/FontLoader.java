@@ -1,6 +1,7 @@
 package com.Basics.ReadAndWrite;
 
 import com.Rendering.Textures.Texture;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ public class FontLoader {
     }
 
     private void loadFontData(List<String> file){
+        assert file != null;
         loadCommonData(List.of(getLinesWith("common", file).getFirst().trim().split("\\s+")));
 
         List<String> charLines = getLinesWith("char", file);
@@ -35,7 +37,7 @@ public class FontLoader {
         doForEachLine(pageLines, this::loadPages);
     }
 
-    private void doForEachLine(List<String> list, Consumer<List<String>> consumer){
+    private void doForEachLine(@NotNull List<String> list,@NotNull Consumer<List<String>> consumer){
         //Splits each line at " " and consumes it with the consumer
         list.stream()
                 .map(s -> s.split(" "))
