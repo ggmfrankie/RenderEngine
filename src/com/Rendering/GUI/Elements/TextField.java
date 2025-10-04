@@ -1,9 +1,6 @@
 package com.Rendering.GUI.Elements;
 
-import com.Basics.Interface.ClickAction;
-import com.Rendering.Mesh.Mesh;
 import com.Rendering.Textures.Texture;
-import com.Window.Window;
 import org.joml.Vector2f;
 
 public class TextField extends BaseGuiComponent{

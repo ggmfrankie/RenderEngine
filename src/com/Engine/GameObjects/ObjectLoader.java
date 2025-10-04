@@ -1,19 +1,10 @@
 package com.Engine.GameObjects;
 
-import com.Basics.Saving.GUIJsonReader;
-import com.Basics.Saving.JsonReader;
+import com.Basics.ReadAndWrite.GUIJsonReader;
 import com.Engine.Events;
 import com.Rendering.GUI.Elements.BaseGuiComponent;
-import com.Rendering.GUI.Elements.Button;
-import com.Rendering.GUI.Elements.TextField;
-import com.Rendering.GUI.GUIRenderer;
 import com.Rendering.Light.DirectionalLight;
 import com.Rendering.Light.PointLight;
-import com.Rendering.Light.SpotLight;
-import com.Rendering.Textures.PatchTexture;
-import com.Rendering.Textures.Texture;
-import org.joml.Math;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.HashSet;

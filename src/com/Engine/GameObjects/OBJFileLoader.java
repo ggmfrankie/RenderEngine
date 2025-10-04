@@ -146,7 +146,7 @@ public class OBJFileLoader {
     private Material loadMaterial(List<String> lines){
         String header = lines.getFirst();
         String name = header.replace("newmtl", "").trim();
-        if(false){
+        if(!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!false){
             _PRINT_("---------------------------");
             _PRINT_("New material: " +name);
             _PRINT_("With file:");
