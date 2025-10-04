@@ -1,6 +1,7 @@
-package com.Engine.GameObjects;
+package com.Basics.ReadAndWrite;
 
 import com.Basics.Parsing;
+import com.Engine.GameObjects.OBJLoader;
 import com.Rendering.Light.Material;
 import com.Rendering.Mesh.Mesh;
 import com.Rendering.Mesh.MeshData;
@@ -12,8 +13,7 @@ import org.joml.Vector4f;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.Basics.Parsing.parseVec2f;
-import static com.Basics.Parsing.parseVec3f;
+import static com.Basics.Parsing.*;
 import static com.Basics.Utils.*;
 
 public class OBJFileLoader {
@@ -302,12 +302,7 @@ public class OBJFileLoader {
         return new Texture(textureName);
     }
 
-    private List<String> getLinesWith(String key, List<String> file){
-        return file.stream()
-                .filter(s -> s.startsWith(key+ " "))
-                .map(s -> s.replace(key+ " ", ""))
-                .toList();
-    }
+
 
     static final class Defaults {
         public final Vector4f AMBIENT_COLOR = new Vector4f(0.5f);
@@ -378,36 +373,4 @@ public class OBJFileLoader {
     }
 
     protected record IdxGroup(int pos, int tex, int nor){}
-
-    protected static class IdxGroup1{
-        public static final int NO_VALUE = -1;
-        public int idxPos;
-        public int idxTextCoord;
-        public int idxVecNormal;
-
-        public IdxGroup1(){
-            idxPos = NO_VALUE;
-            idxTextCoord = NO_VALUE;
-            idxVecNormal = NO_VALUE;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof OBJLoader.IdxGroup other)) return false;
-            return idxPos == other.idxPos &&
-                    idxTextCoord == other.idxTextCoord &&
-                    idxVecNormal == other.idxVecNormal;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(idxPos, idxTextCoord, idxVecNormal);
-        }
-
-        @Override
-        public String toString(){
-            return "idxPos: " +idxPos+ " idxTextcoord: " +idxTextCoord+ " idxVecNormal: " +idxVecNormal;
-        }
-    }
 }

@@ -19,29 +19,29 @@ public class Texture {
     public Texture(String name){
         textureName = name.replace("[", "").replace("]", "");
         BufferedImage rgbImage;
-        System.out.println(textureName);
+
         if(textureName.isEmpty()) return;
+
         try {
-            rgbImage = decodeImage(textureName);
+            rgbImage = decodeImage(
+                    System.getProperty("user.dir") + "\\Resources\\Textures\\" +textureName
+            );
         } catch (RuntimeException e){
-            rgbImage = decodeImage("\\Default\\default.png");
+            rgbImage = decodeImage(System.getProperty("user.dir") + "\\Resources\\Textures\\Default\\default.png");
         }
 
         byteBuffer = getRGBA(rgbImage);
-
     }
 
     public  Texture(){
         textureName = "";
     }
 
-    public BufferedImage decodeImage(String name) {
-
-        String path = System.getProperty("user.dir") + "\\Resources\\Textures\\" + name;
+    public BufferedImage decodeImage(String path) {
         try{
-            System.out.println("Path is: " +path);
+            //System.out.println("Path is: " +path);
             BufferedImage image = ImageIO.read(new File(path));
-            System.out.println(path);
+            //System.out.println(path);
             BufferedImage rgbImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
             rgbImage.getGraphics().drawImage(image,0 ,0 ,null);
             widthImage = rgbImage.getWidth();

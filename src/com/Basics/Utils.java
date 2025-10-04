@@ -34,7 +34,7 @@ public class Utils {
 
 
         } catch (FileNotFoundException e){
-            debugPrint("File not Found at "+ System.getProperty("user.dir") + path);
+            System.out.println("File not Found at "+ System.getProperty("user.dir") + path);
         }
         return fileContents;
     }

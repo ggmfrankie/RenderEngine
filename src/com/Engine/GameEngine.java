@@ -1,5 +1,5 @@
 package com.Engine;
-import com.Engine.GameObjects.OBJFileLoader;
+import com.Basics.ReadAndWrite.OBJFileLoader;
 import com.Engine.GameObjects.OBJLoader;
 import com.Basics.ReadAndWrite.GUIJsonWriter;
 import com.Engine.GameObjects.GameItem;

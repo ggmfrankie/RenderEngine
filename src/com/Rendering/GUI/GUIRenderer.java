@@ -1,5 +1,6 @@
 package com.Rendering.GUI;
 
+import com.Basics.ReadAndWrite.FontLoader;
 import com.Rendering.GUI.Elements.BaseGuiComponent;
 import com.Rendering.GUI.Elements.Button;
 import com.Rendering.Textures.PatchTexture;
@@ -16,13 +17,14 @@ import static org.lwjgl.opengl.GL11C.*;
 public class GUIRenderer {
     ShaderProgram shaderProgram;
     Transformations2D transformations;
-
+    FontLoader fontLoader;
     HashSet<BaseGuiComponent> guiComponents;
 
 
     public GUIRenderer() {
         guiComponents = new HashSet<>();
         transformations = new Transformations2D();
+        fontLoader = new FontLoader("MainFont2.fnt");
     }
 
     public void render(Window window){
@@ -32,8 +34,8 @@ public class GUIRenderer {
 
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
 
         for(BaseGuiComponent guiComponent : guiComponents){
 
@@ -42,14 +44,10 @@ public class GUIRenderer {
             shaderProgram.setUniform("positionObject", guiComponent.getPosition());
             shaderProgram.setUniform("isActive", guiComponent.isActive() ? 1 : 0);
             if(guiComponent.isUsingNinePatch()) shaderProgram.setUniform("scale", transformations.recalculateStretch(guiComponent));
-            //shaderProgram.setUniform("isActive", 0);
             shaderProgram.setUniform("hasTexture", guiComponent.getMesh().getMaterial().hasTexture() ? 1 : 0);
             if(guiComponent instanceof Button && guiComponent.getTexture() instanceof PatchTexture patchTexture) shaderProgram.setUniform("patchStretch", patchTexture);
 
-            //shaderProgram.setUniform("hasTexture", 0);
-
             guiComponent.render();
-
         }
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
@@ -59,7 +57,8 @@ public class GUIRenderer {
     public void init() throws Exception {
         String fragmentShaderCode = loadShaderFile("\\GUI\\GuiFragment.glsl");
         String vertexShaderCode = loadShaderFile("\\GUI\\GuiVertex.glsl");
-
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         shaderProgram = new ShaderProgram();
         shaderProgram.createVertexShader(vertexShaderCode);
         shaderProgram.createFragmentShader(fragmentShaderCode);

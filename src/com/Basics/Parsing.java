@@ -69,4 +69,11 @@ public class Parsing {
                 .map(Parsing::parseVec2f)
                 .toList();
     }
+
+    public static List<String> getLinesWith(String key, List<String> file){
+        return file.stream()
+                .filter(s -> s.startsWith(key+ " "))
+                .map(s -> s.replace(key+ " ", ""))
+                .toList();
+    }
 }
