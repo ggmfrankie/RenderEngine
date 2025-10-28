@@ -75,12 +75,10 @@ public class GameEngine implements Runnable{
             window.createWindow();
             window.initWindow();
 
-
             debugPrint("Game was initialized");
 
             gameLogic.setCamera(renderer.getCamera());
             gameLogic.setDirectionalLight(renderer.getDirectionalLight());
-
 
             renderer.init();
             renderer.initGameItems();

@@ -91,8 +91,6 @@ void main() {
         pixelPos.y += (scale.bottom);
     }
 
-
-
     vec2 ndcPos = vec2(
     (pixelPos.x / screenWidth) * 2.0 - 1.0,
     1.0 - (pixelPos.y / screenHeight) * 2.0);

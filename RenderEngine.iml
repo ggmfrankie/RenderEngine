@@ -10,5 +10,14 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="lwjgl-glfw-natives-freebsd" level="project" />
     <orderEntry type="library" name="joml-1.10.8" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/annotations-24.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

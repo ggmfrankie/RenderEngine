@@ -35,8 +35,6 @@ public class GUIRenderer {
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
 
-
-
         for(BaseGuiComponent guiComponent : guiComponents){
 
             shaderProgram.setUniform("width", (float) guiComponent.getWidth());

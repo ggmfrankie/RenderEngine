@@ -19,14 +19,11 @@ import java.util.Map;
 import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderProgram {
-
     private final int programId;
     private int vertexShaderId;
     private int fragmentShaderId;
     private int timeUniformLocation;
     private final Map<String, Integer> uniforms;
-
-
 
     public ShaderProgram() throws Exception{
         programId = glCreateProgram();
@@ -75,16 +72,11 @@ public class ShaderProgram {
 
         glValidateProgram(programId);
 
-
-
         if (glGetProgrami(programId, GL_VALIDATE_STATUS) == 0) {
             System.err.println("Warning validating com.Basics.Shader code: " + glGetProgramInfoLog(programId, 1024));
         }
 
     }
-
-
-
 
     public void createUniforms(String uniformName) throws Exception{
         int uniformLocation = glGetUniformLocation(this.programId, uniformName);
@@ -171,15 +163,6 @@ public class ShaderProgram {
 
     }
 
-
-//    public void createMaterialUniform(String uniformName) throws Exception {
-//        createUniforms(uniformName + ".ambient");
-//        createUniforms(uniformName + ".diffuse");
-//        createUniforms(uniformName + ".specular");
-//        createUniforms(uniformName + ".hasTexture");
-//        createUniforms(uniformName + ".reflectance");
-//    }
-
     public void createNinePatchUniform(String uniformName) throws Exception {
         createUniforms(uniformName + ".stretchStartX");
         createUniforms(uniformName + ".stretchStartY");
@@ -214,14 +197,6 @@ public class ShaderProgram {
         setUniform(uniformName + ".att.exponent", att.getExponent());
     }
 
-//    public void setUniform(String uniformName, Material material) {
-//        setUniform(uniformName + ".ambient", material.getAmbientColor());
-//        setUniform(uniformName + ".diffuse", material.getDiffuseColor());
-//        setUniform(uniformName + ".specular", material.getSpecularColor());
-//        setUniform(uniformName + ".hasTexture", material.hasTexture() ? 1 : 0);
-//        setUniform(uniformName + ".reflectance", material.getSpecularExponent());
-//    }
-
     public void setUniform(String uniformName, Material material) {
         setUniform(uniformName + ".ambient", material.getAmbientColor());
         setUniform(uniformName + ".diffuse", material.getDiffuseColor());
@@ -232,8 +207,6 @@ public class ShaderProgram {
         setUniform(uniformName + ".dissolve", material.getDissolve());
         setUniform(uniformName + ".hasTexture", material.hasTexture() ? 1 : 0);
     }
-
-
 
     public void setUniform(String uniformName, DirectionalLight dirLight) {
         setUniform(uniformName + ".color", dirLight.getColor() );
