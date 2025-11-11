@@ -47,26 +47,26 @@ public class OBJLoader {
         textureSubstrings = getLinesWith("vt", file);
         normalSubstrings = getLinesWith("vn", file);
 
-        System.out.println("VertexSubstrings:");
-        System.out.println();
-        for (String ver : vertexSubstrings) {
-            System.out.println(ver);
-        }
-        System.out.println();
-
-        System.out.println("TextureSubstrings:");
-        System.out.println();
-        for (String tex : textureSubstrings) {
-            System.out.println(tex);
-        }
-        System.out.println();
-
-        System.out.println("NormalSubstrings:");
-        System.out.println();
-        for (String norm : normalSubstrings) {
-            System.out.println(norm);
-        }
-        System.out.println();
+//        System.out.println("VertexSubstrings:");
+//        System.out.println();
+//        for (String ver : vertexSubstrings) {
+//            System.out.println(ver);
+//        }
+//        System.out.println();
+//
+//        System.out.println("TextureSubstrings:");
+//        System.out.println();
+//        for (String tex : textureSubstrings) {
+//            System.out.println(tex);
+//        }
+//        System.out.println();
+//
+//        System.out.println("NormalSubstrings:");
+//        System.out.println();
+//        for (String norm : normalSubstrings) {
+//            System.out.println(norm);
+//        }
+//        System.out.println();
         materials = loadMaterialsFromFile(materialFile);
         List<Mesh> meshes = new ArrayList<>();
         List<String> currentFaces = new ArrayList<>();
@@ -79,11 +79,11 @@ public class OBJLoader {
             if(line.startsWith("g ") || line.startsWith("o ")){
                 if(!currentFaces.isEmpty()){
 
-                    System.out.println();
-                    System.out.println();
-                    System.out.println("The list the mesh sees is: " +currentFaces);
-                    System.out.println();
-                    System.out.println();
+//                    System.out.println();
+//                    System.out.println();
+//                    System.out.println("The list the mesh sees is: " +currentFaces);
+//                    System.out.println();
+//                    System.out.println();
                     meshes.add(loadMesh(currentFaces, materials.getOrDefault(currentMaterial, new Material("default"))));
                 }
                 currentFaces = new ArrayList<>();
@@ -96,12 +96,12 @@ public class OBJLoader {
         }
         if(!currentFaces.isEmpty()){
 
-            System.out.println("final mesh:");
-            System.out.println();
-            System.out.println("The list the mesh sees is: " +currentFaces);
-            System.out.println();
-            System.out.println();
-            meshes.add(loadMesh(currentFaces, materials.getOrDefault(currentMaterial, new Material("default"))));
+//            System.out.println("final mesh:");
+//            System.out.println();
+//            System.out.println("The list the mesh sees is: " +currentFaces);
+//            System.out.println();
+//            System.out.println();
+//            meshes.add(loadMesh(currentFaces, materials.getOrDefault(currentMaterial, new Material("default"))));
         }
         return meshes;
     }
@@ -119,46 +119,30 @@ public class OBJLoader {
         List<Integer> indicesList= new ArrayList<>();
 
         Map<IdxGroup, Integer> uniqueVertexMap = new HashMap<>();
-        System.out.println("________________________________ yooo");
-        System.out.println("File: " +file);
 
         vertices = parseV3(vertexSubstrings);
         textures = parseV2(textureSubstrings);
         normals = parseV3(normalSubstrings);
 
-        List<String> testFaces = new ArrayList<>();
-
         for(String faceString : file){
             if(!faceString.startsWith("f ")) continue;
 
             faces.add(new Face(faceString.replace("f ", "")));
-            String[] faceStrings = faceString.split(" ");
-
-            for(String s : faceStrings){
-                if(s.startsWith("f")) continue;
-                testFaces.add(s);
-            }
-            //System.out.println(faceString);
-            /*
-            for (IdxGroup idx : new Face(faceString).getFaceVertexIndices()) {
-                System.out.println("v:" + idx.idxPos + " vt:" + idx.idxTextCoord + " vn:" + idx.idxVecNormal);
-            }
-
-             */
         }
 
-        int counter = 0;
         int i = 0;
         for (Face face : faces) {
             List<Face> triangles = face.triangulate();
             for (Face triangle : triangles) {
 
                 for (IdxGroup idx : triangle.getFaceVertexIndices()) {
-                    // ensure unique combo
-                    {
+                    if(uniqueVertexMap.containsKey(idx)){
+                        int index = uniqueVertexMap.get(idx);
+                        indicesList.add(index);
+
+                    } else {
                         uniqueVertexMap.put(idx, finalPositions.size());
 
-                        // careful: OBJ indices are 1-based
                         Vector3f pos = vertices.get(idx.idxPos - 1);
                         Vector2f tex = textures.get(idx.idxTextCoord - 1);
                         Vector3f norm = normals.get(idx.idxVecNormal - 1);
@@ -166,13 +150,10 @@ public class OBJLoader {
                         finalPositions.add(pos);
                         finalTexCoords.add(tex);
                         finalNormals.add(norm);
+
+                        indicesList.add(i);
+                        i++;
                     }
-                    indicesList.add(i);
-                    i++;
-                    // debug
-                    System.out.println("--------------------------------");
-                    System.out.println("Unique#" + counter + " " + idx);
-                    counter++;
                 }
             }
         }

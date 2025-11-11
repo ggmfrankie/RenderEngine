@@ -29,7 +29,7 @@ public class Renderer {
 
     private static final float Z_FAR = 1000.f;
 
-    private Transformation transformation;
+    private final Transformation transformation;
     private PointLight pointLight;
     private DirectionalLight directionalLight;
     private SpotLight spotLight;

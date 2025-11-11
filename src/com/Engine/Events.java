@@ -15,6 +15,8 @@ public class Events {
     Map<String, ClickAction> clickActions;
     Map<String, UpdateAction> updateActions;
 
+    private static Vector2f dragOffset;
+
     public Events(){
         clickActions = new HashMap<>();
         updateActions = new HashMap<>();
@@ -41,6 +43,10 @@ public class Events {
                             );
                     gameItem.setRotation(rotationNew);
         });
+    }
+
+    public static void drag(){
+
     }
 
     public ClickAction getClickAction(String key){

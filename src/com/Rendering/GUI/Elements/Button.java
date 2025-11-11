@@ -36,19 +36,12 @@ public class Button extends BaseGuiComponent implements IClickable {
     }
 
     @Override
-    public void setScale(float scale){
-        this.width *= scale;
-        this.height *= scale;
-    }
-
-    @Override
     public boolean isMouseOver(Vector2f mousePos, Window window) {
         boolean isMouseOver = super.isMouseOver(mousePos, window);
 
         isActive = isMouseOver;
         return isMouseOver;
     }
-
 
     @Override
     public void click() {
