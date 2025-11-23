@@ -163,26 +163,26 @@ public class OBJLoader {
         float[] normalValues = flattenListVec3(finalNormals);
         int[] indicesArray = indicesList.stream().mapToInt(Integer::intValue).toArray();
 
-        float[] pos = vertexPositions; // flattenListVec3(...)
-        System.out.println("VertexPositions:");
-        System.out.println(Arrays.toString(vertexPositions));
-        float[] uv = textureCoordinates; // flattenListVec2(...)
-        System.out.println("TextureCoordinates");
-        System.out.println(Arrays.toString(textureCoordinates));
-        float[] n = normalValues; // flattenListVec3(...)
-        System.out.println("NormalValues");
-        System.out.println(Arrays.toString(normalValues));
-        for (int e = 0; e < Math.min(10, pos.length/3); e++) {
-            System.out.printf("v[%d]=(%f,%f,%f) uv=(%f,%f) n=(%f,%f,%f)%n",
-                    e, pos[e*3], pos[e*3+1], pos[e*3+2],
-                    uv[e*2], uv[e*2+1],
-                    n[e*3], n[e*3+1], n[e*3+2]);
-        }
+//        float[] pos = vertexPositions; // flattenListVec3(...)
+//        System.out.println("VertexPositions:");
+//        System.out.println(Arrays.toString(vertexPositions));
+//        float[] uv = textureCoordinates; // flattenListVec2(...)
+//        System.out.println("TextureCoordinates");
+//        System.out.println(Arrays.toString(textureCoordinates));
+//        float[] n = normalValues; // flattenListVec3(...)
+//        System.out.println("NormalValues");
+//        System.out.println(Arrays.toString(normalValues));
+//        for (int e = 0; e < Math.min(10, pos.length/3); e++) {
+//            System.out.printf("v[%d]=(%f,%f,%f) uv=(%f,%f) n=(%f,%f,%f)%n",
+//                    e, pos[e*3], pos[e*3+1], pos[e*3+2],
+//                    uv[e*2], uv[e*2+1],
+//                    n[e*3], n[e*3+1], n[e*3+2]);
+//        }
 
-        System.out.println("Verts: " + (vertexPositions.length / 3));
-        System.out.println("UVs:   " + (textureCoordinates.length / 2));
-        System.out.println("Norms: " + (normalValues.length / 3));
-        System.out.println("Indices: " + indicesArray.length);
+//        System.out.println("Verts: " + (vertexPositions.length / 3));
+//        System.out.println("UVs:   " + (textureCoordinates.length / 2));
+//        System.out.println("Norms: " + (normalValues.length / 3));
+//        System.out.println("Indices: " + indicesArray.length);
 
 
         MeshData meshData = new MeshData(
@@ -200,11 +200,11 @@ public class OBJLoader {
         file = preProcessFile(file);
         Map<String, Material> materials = new HashMap<>();
         List<String> currentMaterialFile = new ArrayList<>();
-        System.out.println("---------------------");
-        System.out.println();
-        System.out.println(getLinesWith("newmtl", file));
-        System.out.println();
-        System.out.println("---------------------");
+//        System.out.println("---------------------");
+//        System.out.println();
+//        System.out.println(getLinesWith("newmtl", file));
+//        System.out.println();
+//        System.out.println("---------------------");
 
         for(String line : file){
             if(line.startsWith("newmtl")){

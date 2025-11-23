@@ -71,13 +71,6 @@ public class JsonWriter {
             content.add(format(key)  + ": " + Boolean.toString(value) +",");
         }
 
-        /*
-        public <T> void addData(String key, T value) {
-            content.add(format(key) + String.valueOf(value) +",");
-        }
-
-         */
-
         public void addData(GUIJsonWriter.JsonObject object){
             content.addAll(object.getList());
         }

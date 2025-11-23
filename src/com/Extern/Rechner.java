@@ -1,5 +1,7 @@
 package com.Extern;
 
+import java.util.ArrayList;
+
 import static java.lang.Math.*;
 
 public class Rechner {
@@ -18,5 +20,16 @@ public class Rechner {
 
         double ergebnis = term1 + term2;
         System.out.println(ergebnis);
+    }
+
+    public static void averageDistance(double[] total){
+        double previous = total[0];
+        double distances = 0.0;
+        for(int i = 1; i < total.length; i++){
+            double current = total[i];
+            distances += (current-previous);
+            previous = current;
+        }
+        System.out.printf("Average distance is: %f\n", distances/(total.length-1));
     }
 }

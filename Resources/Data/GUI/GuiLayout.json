@@ -16,6 +16,23 @@
     "click": "dragging"
   }
 },
+  "Helios2": {
+    "type": "Button",
+    "position": {
+      "x": 0.0,
+      "y": 0.0
+    },
+    "size": {
+      "width": 100.0,
+      "height": 150.0
+    },
+    "texture": "GUI\\Button\\Grey_Button.9.png",
+    "isVisible": true,
+    "zIndex": 0,
+    "events": {
+      "click": "dragging"
+    }
+  },
 "Banana2": {
   "type": "Button",
   "position": {

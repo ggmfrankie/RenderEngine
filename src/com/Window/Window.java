@@ -141,11 +141,7 @@ public class Window {
 
         boolean isPressed = isKeyPressed(key);
         boolean isActive;
-        if(isPressed && !wasPressed){
-            isActive = true;
-        } else {
-            isActive = false;
-        }
+        isActive = isPressed && !wasPressed;
 
         wasPressed = isPressed;
         return isActive;
