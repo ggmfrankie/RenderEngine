@@ -1,6 +1,7 @@
 package com.Extern;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static java.lang.Math.*;
 
@@ -31,5 +32,37 @@ public class Rechner {
             previous = current;
         }
         System.out.printf("Average distance is: %f\n", distances/(total.length-1));
+    }
+    public static double[] averageDistances(double[] total){
+        double previous = total[0];
+        double[] distances = new double[total.length-1];
+        for(int i = 1; i < total.length; i++){
+            double current = total[i];
+            distances[i-1] = current-previous;
+            previous = current;
+        }
+        System.out.printf("Average distance is: %s\n", Arrays.toString(distances));
+        return distances;
+    }
+
+    public static void standartAbweichung(double[] elements){
+        double average = 0;
+        for(double d : elements){
+            average += d;
+        }
+        average = average/elements.length;
+
+        double sum = 0;
+        for (double element : elements) {
+            sum += pow((element - average), 2);
+        }
+        double result = sqrt(1.0/(elements.length - 1) * sum);
+        System.out.printf("Result is: %f\n", result);
+    }
+
+    public static void schallSchluckGrad(double D){
+        double z = pow(10, D/20);
+        double n = pow((z + 1), 2);
+        System.out.printf("Schallschluckgrad ist: %f\n", 4*z/n);
     }
 }
