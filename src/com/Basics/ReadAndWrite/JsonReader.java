@@ -138,7 +138,7 @@ public class JsonReader {
         System.out.println(object.getObjectData().keySet());
     }
 
-    class JsonObject{
+    static class JsonObject{
         String name;
         Map<String, Boolean> booleanData;
         Map<String, Integer> integerData;

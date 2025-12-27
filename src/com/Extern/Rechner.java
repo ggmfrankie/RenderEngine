@@ -81,4 +81,8 @@ public class Rechner {
         System.out.printf("Average is: %f", total/werte.length);
     }
 
+    public static void refactorString(String s){
+        System.out.println(s.replace(",", ".").replace("\n", ","));
+    }
+
 }

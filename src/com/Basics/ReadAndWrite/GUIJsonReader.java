@@ -24,15 +24,18 @@ public class GUIJsonReader extends JsonReader{
         for(JsonObject object : guiObjects.values()){
 
             String name = object.getName();
-            System.out.println("name: " +name);
+            //System.out.println("name: " +name);
             JsonObject position = object.getObject("position");
             Vector2f pos = new Vector2f(position.getFloat("x"), position.getFloat("y"));
+
             JsonObject size = object.getObject("size");
             float width = size.getFloat("width");
             float height = size.getFloat("height");
+
             String texture = object.getString("texture");
             boolean isVisible = object.getBool("isVisible");
             int zIndex = object.getInt("zIndex");
+
             String type = object.getString("type");
             //System.out.println("type is: " +type);
 
