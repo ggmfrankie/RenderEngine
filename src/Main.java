@@ -9,8 +9,8 @@ import static com.Extern.Rechner.*;
 public class Main {
 
     public static void main(String[] args) {
-        //gameEngine = new GameEngine("Game", 1000, 1000, new DummyGame());
-        //gameEngine.start();
+        gameEngine = new GameEngine("Game", 1000, 1000, new DummyGame());
+        gameEngine.start();
         double delta_alpha = 0.1;
         var KotlinTest = new KotlinTest();
 

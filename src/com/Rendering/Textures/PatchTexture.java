@@ -44,11 +44,6 @@ public class PatchTexture extends Texture{
             }
         }
 
-
-
-
-
-
         widthImage = cropped.getWidth();
         heightImage = cropped.getHeight();
 
@@ -61,8 +56,6 @@ public class PatchTexture extends Texture{
     }
 
     public float getStretchStartX() {
-        //System.out.println("Correct");
-        //System.out.println(stretchStartX);
         return stretchStartX;
     }
 
