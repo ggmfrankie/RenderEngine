@@ -4,7 +4,7 @@ import org.joml.Vector3f;
 
 public class Camera {
     private final Vector3f position;
-    private Vector3f rotation;
+    private final Vector3f rotation;
 
     public Camera(){
         position = new Vector3f(0, 0, 0);

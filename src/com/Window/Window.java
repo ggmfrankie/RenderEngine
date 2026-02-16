@@ -57,7 +57,6 @@ public class Window {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-        System.out.println(windowName+" "+width+" "+height);
         window = glfwCreateWindow(width,height, windowName, NULL, NULL);
         if (window == NULL)
             throw new RuntimeException("Failed to create the GLFW window");

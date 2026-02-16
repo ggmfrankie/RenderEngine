@@ -99,7 +99,7 @@ public class GameEngine implements Runnable{
 
     public void gameLoop(){
 
-        double secsPerUpdate = 1d/30d;
+        double secsPerUpdate = 1d/120d;
         double previous = getTime();
         double steps = 0.0d;
         boolean isGameActive = true;
@@ -136,16 +136,14 @@ public class GameEngine implements Runnable{
         while(getTime() < endTime){
             try {
                 Thread.sleep(1);
-            } catch (InterruptedException ie){
-
-            }
+            } catch (InterruptedException _){}
         }
     }
 
     public void saveAll(){
         GUIJsonWriter GUIJsonWriter = new GUIJsonWriter("GuiLayout.json");
         HashSet<BaseGuiComponent> guiComponents = guiRenderer.getGuiComponents();
-        for(BaseGuiComponent guiComponent : guiComponents){
+        for (BaseGuiComponent guiComponent : guiComponents){
             GUIJsonWriter.addGuiComponent(guiComponent);
         }
         GUIJsonWriter.printToFile();

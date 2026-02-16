@@ -22,8 +22,8 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.opengl.GL11.glAreTexturesResident;
 
 public class DummyGame implements IGameLogic {
-    private static final float CAMERA_POS_STEP = 0.0003f;
-    private static final float MOUSE_SENSITIVITY = 0.0005f;
+    private static final float CAMERA_POS_STEP = 0.00003f;
+    private static final float MOUSE_SENSITIVITY = 0.00005f;
     float lightAngle;
     Vector3f cameraInc;
     Camera camera;

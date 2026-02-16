@@ -19,7 +19,7 @@ import static com.Basics.Utils.*;
 public class OBJFileLoader {
     Map<String, Material> materials;
     final boolean DEBUG = true;
-    Defaults defaults = new Defaults();
+    static Defaults defaults = new Defaults();
 
     List<String> vertexSubstrings;
     List<String> textureSubstrings;
