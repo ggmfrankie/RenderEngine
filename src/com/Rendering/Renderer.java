@@ -23,16 +23,16 @@ public class Renderer {
     HashSet<GameItem> gameItems;
     Mesh currentMesh;
     Camera camera;
-    private static final float FOV = (float) Math.toRadians(60.0f);
+    static final float FOV = (float) Math.toRadians(60.0f);
 
-    private static final float Z_NEAR = 0.01f;
+    static final float Z_NEAR = 0.01f;
 
-    private static final float Z_FAR = 1000.f;
+    static final float Z_FAR = 1000.f;
 
-    private final Transformation transformation;
-    private PointLight pointLight;
-    private DirectionalLight directionalLight;
-    private SpotLight spotLight;
+    final Transformation transformation;
+    PointLight pointLight;
+    DirectionalLight directionalLight;
+    SpotLight spotLight;
 
 
     public Renderer(){

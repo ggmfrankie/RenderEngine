@@ -145,7 +145,7 @@ public class GameEngine implements Runnable{
     public void saveAll(){
         GUIJsonWriter GUIJsonWriter = new GUIJsonWriter("GuiLayout.json");
         HashSet<BaseGuiComponent> guiComponents = guiRenderer.getGuiComponents();
-        for(BaseGuiComponent guiComponent : guiComponents){
+        for (BaseGuiComponent guiComponent : guiComponents){
             GUIJsonWriter.addGuiComponent(guiComponent);
         }
         GUIJsonWriter.printToFile();
