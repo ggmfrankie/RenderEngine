@@ -78,7 +78,16 @@ public class Rechner {
         for(double d : werte){
             total += d;
         }
-        System.out.printf("Average is: %f", total/werte.length);
+        System.out.printf("Average is: %f\n", total/werte.length);
     }
 
+    public static void steigung(double phi0, double phi1, double t){
+        double z = log(phi0/phi1);
+        System.out.printf("Berechnete Steigung: %f\n", z/t);
+    }
+
+    public static void phiWerte(double phi0, double delta, double[] t){
+        Arrays.stream(t).forEach((s) -> {
+            System.out.printf("%f\n",phi0 * exp(delta*-1 * s)); });
+    }
 }

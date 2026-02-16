@@ -28,8 +28,6 @@ public class JsonReader {
         }
     }
 
-
-
     private JsonObject convertData(JsonObject object, String file){
         boolean inValue = false;
         boolean inKey = false;
